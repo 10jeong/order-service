@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -104,6 +102,15 @@ public class Order {
                 .cancelledAt(null)
                 .cancelReason(null)
                 .build();
+    }
+
+    // CONFIRMED -> COMPLETED
+    public void complete() {
+        if (this.orderStatus != OrderStatus.CONFIRMED) {
+            // throw INVALID_ORDER_STATUS
+        }
+
+        this.orderStatus = OrderStatus.COMPLETED;
     }
 
     private static void validateQuantity(int quantity) {
