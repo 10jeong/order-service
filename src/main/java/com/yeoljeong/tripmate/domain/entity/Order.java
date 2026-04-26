@@ -113,6 +113,25 @@ public class Order {
         this.orderStatus = OrderStatus.COMPLETED;
     }
 
+    // CONFIRMED -> CANCELLED or COMPLETED -> CANCELLED
+    public void cancel(LocalDateTime cancelledAt, String cancelReason) {
+        if (this.orderStatus != OrderStatus.CONFIRMED && this.orderStatus != OrderStatus.COMPLETED) {
+            // throw INVALID_ORDER_STATUS
+        }
+
+        if (cancelledAt == null) {
+            // throw INVALID_CANCELLED_AT
+        }
+
+        if (cancelReason == null) {
+            // throw INVALID_CANCEL_REASON;
+        }
+
+        this.orderStatus = OrderStatus.CANCELLED;
+        this.cancelledAt = cancelledAt;
+        this.cancelReason = cancelReason;
+    }
+
     private static void validateQuantity(int quantity) {
         if (quantity < 1) {
             // throw INVALID_QUANTITY
