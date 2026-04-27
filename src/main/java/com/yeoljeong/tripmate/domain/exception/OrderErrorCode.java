@@ -15,7 +15,11 @@ public enum OrderErrorCode implements ErrorCode {
     INVALID_PRICE(HttpStatus.BAD_REQUEST, "가격이 유효하지 않습니다."),
     INVALID_EXPERIENCE_DATE(HttpStatus.BAD_REQUEST, "체험 예정일이 유효하지 않습니다."),
     INVALID_ID_FIELD(HttpStatus.BAD_REQUEST, "ID 필드 값이 유효하지 않습니다."),
-    INVALID_TEXT_FIELD(HttpStatus.BAD_REQUEST, "필드 값이 유효하지 않습니다.");
+    INVALID_TEXT_FIELD(HttpStatus.BAD_REQUEST, "필드 값이 유효하지 않습니다."),
+    INVALID_ORDER(HttpStatus.BAD_REQUEST, "주문이 유효하지 않습니다."),
+    INVALID_PRODUCT_INFO(HttpStatus.BAD_REQUEST, "상품 정보가 유효하지 않습니다."),
+    INVALID_ORDER_ITEM(HttpStatus.BAD_REQUEST, "주문 항목이 유효하지 않습니다."),
+    INVALID_ORDER_ITEM_COUNT(HttpStatus.BAD_REQUEST, "주문 항목은 주문 하나 당 한 건만 존재해야 합니다.");
 
     private final HttpStatus status;
     private final String description;
