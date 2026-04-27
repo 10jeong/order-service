@@ -83,6 +83,12 @@ public class Order {
 
     public static Order create(UUID userId, UUID planUnitId, UUID productId, String productName, BigDecimal price, String companyName,
                         String country, String state, String city, UUID scheduleId, int quantity, LocalDate experienceDate, LocalDate today) {
+        validateRequiredIds(userId, planUnitId, productId, scheduleId);
+        validateRequiredText(productName);
+        validateRequiredText(companyName);
+        validateRequiredText(country);
+        validateRequiredText(state);
+        validateRequiredText(city);
         validateQuantity(quantity);
         validatePrice(price);
         validateExperienceDate(experienceDate, today);
@@ -149,6 +155,18 @@ public class Order {
     private static void validateExperienceDate(LocalDate experienceDate, LocalDate today) {
         if (experienceDate == null || experienceDate.isBefore(today)) {
             throw new BusinessException(OrderErrorCode.INVALID_EXPERIENCE_DATE);
+        }
+    }
+
+    private static void validateRequiredIds(UUID userId, UUID planUnitId, UUID productId, UUID scheduleId) {
+        if (userId == null || planUnitId == null || productId == null || scheduleId == null) {
+            throw new BusinessException(OrderErrorCode.INVALID_ID_FIELD);
+        }
+    }
+
+    private static void validateRequiredText(String value) {
+        if (value == null || value.isBlank()) {
+            throw new BusinessException(OrderErrorCode.INVALID_TEXT_FIELD);
         }
     }
 }
