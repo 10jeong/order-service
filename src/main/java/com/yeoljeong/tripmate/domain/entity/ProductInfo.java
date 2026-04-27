@@ -14,22 +14,22 @@ public class ProductInfo {
     @Column(name = "product_id", nullable = false)
     private UUID productId;
 
-    @Column(name = "product_name", nullable = false)
+    @Column(name = "product_name", length = 255, nullable = false)
     private String productName;
 
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Column(name = "company_name", nullable = false)
+    @Column(name = "company_name", length = 100, nullable = false)
     private String companyName;
 
-    @Column(nullable = false)
+    @Column(length = 2, nullable = false)
     private String country;
 
-    @Column(nullable = false)
+    @Column(length = 255, nullable = false)
     private String state;
 
-    @Column(nullable = false)
+    @Column(length = 255, nullable = false)
     private String city;
 
     @Column(name = "schedule_id", nullable = false)
