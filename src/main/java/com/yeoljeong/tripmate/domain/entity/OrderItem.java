@@ -1,6 +1,7 @@
 package com.yeoljeong.tripmate.domain.entity;
 
 import com.yeoljeong.tripmate.domain.BaseAuditEntity;
+import com.yeoljeong.tripmate.domain.enums.Country;
 import com.yeoljeong.tripmate.domain.exception.OrderErrorCode;
 import com.yeoljeong.tripmate.exception.BusinessException;
 import jakarta.persistence.*;
@@ -57,7 +58,7 @@ public class OrderItem extends BaseAuditEntity {
 
     @Builder
     private OrderItem(Order order, UUID planUnitId, UUID productId, String productName, BigDecimal price, String companyName,
-                      String country, String state, String city, UUID scheduleId, int quantity, LocalDate experienceDate) {
+                      Country country, String state, String city, UUID scheduleId, int quantity, LocalDate experienceDate) {
         this.order = order;
         this.planUnitId = planUnitId;
         this.productInfo = ProductInfo.of(productId, productName, price, companyName, country, state, city, scheduleId);
@@ -66,13 +67,14 @@ public class OrderItem extends BaseAuditEntity {
     }
 
     static OrderItem create(Order order, UUID planUnitId, UUID productId, String productName, BigDecimal price, String companyName,
-                            String country, String state, String city, UUID scheduleId, int quantity, LocalDate experienceDate, LocalDate today) {
+                            Country country, String state, String city, UUID scheduleId, int quantity, LocalDate experienceDate, LocalDate today) {
         validateOrder(order);
         validatePrice(price);
+        validateCountry(country);
         validateQuantity(quantity);
         validateExperienceDate(experienceDate, today);
         validateRequiredIds(planUnitId, productId, scheduleId);
-        validateRequiredTexts(productName, companyName, country, state, city);
+        validateRequiredTexts(productName, companyName, state, city);
 
         return OrderItem.builder()
                 .order(order)
@@ -106,6 +108,12 @@ public class OrderItem extends BaseAuditEntity {
         }
     }
 
+    private static void validateCountry(Country country) {
+        if (country == null) {
+            throw new BusinessException(OrderErrorCode.INVALID_COUNTRY);
+        }
+    }
+
     private static void validateQuantity(int quantity) {
         if (quantity < 1) {
             throw new BusinessException(OrderErrorCode.INVALID_QUANTITY);
@@ -124,10 +132,9 @@ public class OrderItem extends BaseAuditEntity {
         }
     }
 
-    private static void validateRequiredTexts(String productName, String companyName, String country, String state, String city) {
+    private static void validateRequiredTexts(String productName, String companyName, String state, String city) {
         if (isBlank(productName) || productName.length() > 255
                 || isBlank(companyName) || companyName.length() > 100
-                || isBlank(country) || country.length() != 2
                 || isBlank(state) || state.length() > 255
                 || isBlank(city) || city.length() > 255) {
             throw new BusinessException(OrderErrorCode.INVALID_TEXT_FIELD);

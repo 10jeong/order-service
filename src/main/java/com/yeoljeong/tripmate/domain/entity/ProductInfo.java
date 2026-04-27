@@ -1,7 +1,10 @@
 package com.yeoljeong.tripmate.domain.entity;
 
+import com.yeoljeong.tripmate.domain.enums.Country;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -23,8 +26,9 @@ public class ProductInfo {
     @Column(name = "company_name", length = 100, nullable = false)
     private String companyName;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 2, nullable = false)
-    private String country;
+    private Country country;
 
     @Column(length = 255, nullable = false)
     private String state;
@@ -36,7 +40,7 @@ public class ProductInfo {
     private UUID scheduleId;
 
     protected ProductInfo(UUID productId, String productName, BigDecimal price, String companyName,
-                          String country, String state, String city, UUID scheduleId) {
+                          Country country, String state, String city, UUID scheduleId) {
         this.productId = productId;
         this.productName = productName;
         this.price = price;
@@ -48,7 +52,7 @@ public class ProductInfo {
     }
 
     public static ProductInfo of(UUID productId, String productName, BigDecimal price, String companyName,
-                                 String country, String state, String city, UUID scheduleId) {
+                                 Country country, String state, String city, UUID scheduleId) {
         return new ProductInfo(productId, productName, price, companyName, country, state, city, scheduleId);
     }
 }
