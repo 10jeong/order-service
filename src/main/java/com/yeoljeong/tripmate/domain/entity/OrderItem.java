@@ -113,7 +113,7 @@ public class OrderItem extends BaseAuditEntity {
     }
 
     private static void validateExperienceDate(LocalDate experienceDate, LocalDate today) {
-        if (experienceDate == null || experienceDate.isBefore(today)) {
+        if (today == null || experienceDate == null || experienceDate.isBefore(today)) {
             throw new BusinessException(OrderErrorCode.INVALID_EXPERIENCE_DATE);
         }
     }
