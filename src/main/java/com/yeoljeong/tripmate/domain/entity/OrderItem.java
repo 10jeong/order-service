@@ -125,7 +125,11 @@ public class OrderItem extends BaseAuditEntity {
     }
 
     private static void validateRequiredTexts(String productName, String companyName, String country, String state, String city) {
-        if (isBlank(productName) || isBlank(companyName) || isBlank(country) || isBlank(state) || isBlank(city)) {
+        if (isBlank(productName) || productName.length() > 255
+                || isBlank(companyName) || companyName.length() > 100
+                || isBlank(country) || country.length() != 2
+                || isBlank(state) || state.length() > 255
+                || isBlank(city) || city.length() > 255) {
             throw new BusinessException(OrderErrorCode.INVALID_TEXT_FIELD);
         }
     }
