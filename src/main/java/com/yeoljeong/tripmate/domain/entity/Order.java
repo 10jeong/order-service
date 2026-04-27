@@ -111,7 +111,7 @@ public class Order extends BaseAuditEntity {
     }
 
     public void delete(UUID userId) {
-        super.softDelete(userId);
+        super.softDelete();
         this.orderItems.forEach(orderItem -> orderItem.delete(userId));
     }
 

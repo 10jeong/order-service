@@ -91,7 +91,7 @@ public class OrderItem extends BaseAuditEntity {
     }
 
     public void delete(UUID userId) {
-        super.softDelete(userId);
+        super.softDelete();
     }
 
     private static void validateOrder(Order order) {
