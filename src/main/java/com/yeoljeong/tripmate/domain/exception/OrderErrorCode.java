@@ -22,11 +22,11 @@ public enum OrderErrorCode implements ErrorCode {
 
     @Override
     public int getCode() {
-        return 0;
+        return this.status.value();
     }
 
     @Override
     public String getMessage() {
-        return "";
+        return this.description;
     }
 }
