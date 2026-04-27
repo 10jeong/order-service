@@ -1,6 +1,7 @@
 package com.yeoljeong.tripmate.domain.entity;
 
 import com.yeoljeong.tripmate.domain.BaseAuditEntity;
+import com.yeoljeong.tripmate.domain.enums.Country;
 import com.yeoljeong.tripmate.domain.enums.OrderStatus;
 import com.yeoljeong.tripmate.domain.exception.OrderErrorCode;
 import com.yeoljeong.tripmate.exception.BusinessException;
@@ -64,7 +65,7 @@ public class Order extends BaseAuditEntity {
     }
 
     public static Order create(UUID userId, UUID planUnitId, UUID productId, String productName, BigDecimal price, String companyName,
-                        String country, String state, String city, UUID scheduleId, int quantity, LocalDate experienceDate, LocalDate today) {
+                               Country country, String state, String city, UUID scheduleId, int quantity, LocalDate experienceDate, LocalDate today) {
         validateRequiredIds(userId);
 
         Order order = Order.builder()
