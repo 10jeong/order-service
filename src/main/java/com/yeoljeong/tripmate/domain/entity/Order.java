@@ -1,6 +1,8 @@
 package com.yeoljeong.tripmate.domain.entity;
 
 import com.yeoljeong.tripmate.domain.enums.OrderStatus;
+import com.yeoljeong.tripmate.domain.exception.OrderErrorCode;
+import com.yeoljeong.tripmate.exception.BusinessException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -107,7 +109,7 @@ public class Order {
     // CONFIRMED -> COMPLETED
     public void complete() {
         if (this.orderStatus != OrderStatus.CONFIRMED) {
-            // throw INVALID_ORDER_STATUS
+            throw new BusinessException(OrderErrorCode.INVALID_ORDER_STATUS);
         }
 
         this.orderStatus = OrderStatus.COMPLETED;
@@ -116,15 +118,15 @@ public class Order {
     // CONFIRMED -> CANCELLED or COMPLETED -> CANCELLED
     public void cancel(LocalDateTime cancelledAt, String cancelReason) {
         if (this.orderStatus != OrderStatus.CONFIRMED && this.orderStatus != OrderStatus.COMPLETED) {
-            // throw INVALID_ORDER_STATUS
+            throw new BusinessException(OrderErrorCode.INVALID_ORDER_STATUS);
         }
 
         if (cancelledAt == null) {
-            // throw INVALID_CANCELLED_AT
+            throw new BusinessException(OrderErrorCode.INVALID_CANCELLED_AT);
         }
 
         if (cancelReason == null) {
-            // throw INVALID_CANCEL_REASON;
+            throw new BusinessException(OrderErrorCode.INVALID_CANCEL_REASON);
         }
 
         this.orderStatus = OrderStatus.CANCELLED;
@@ -134,19 +136,19 @@ public class Order {
 
     private static void validateQuantity(int quantity) {
         if (quantity < 1) {
-            // throw INVALID_QUANTITY
+            throw new BusinessException(OrderErrorCode.INVALID_QUANTITY);
         }
     }
 
     private static void validatePrice(BigDecimal price) {
         if (price == null || price.compareTo(BigDecimal.ZERO) < 0) {
-            // throw INVALID_PRICE
+            throw new BusinessException(OrderErrorCode.INVALID_PRICE);
         }
     }
 
     private static void validateExperienceDate(LocalDate experienceDate, LocalDate today) {
         if (experienceDate == null || experienceDate.isBefore(today)) {
-            // throw INVALID_EXPERIENCE_DATE
+            throw new BusinessException(OrderErrorCode.INVALID_EXPERIENCE_DATE);
         }
     }
 }
