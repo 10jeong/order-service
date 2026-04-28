@@ -8,6 +8,7 @@ import com.yeoljeong.tripmate.exception.BusinessException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
@@ -28,6 +29,7 @@ import java.util.UUID;
     - 주문 상태가 CANCELLED가 아닌 경우 cancelled_at과 cancel_reason은 null이어야 한다.
  */
 
+@Getter
 @Entity
 @Table(name = "p_order")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -63,8 +65,10 @@ public class Order extends BaseAuditEntity {
     }
 
     public static Order create(UUID userId, UUID planUnitId, UUID productId, String productName, BigDecimal price, String companyName,
-                               Country country, String state, String city, UUID scheduleId, int quantity, LocalDate experienceDate, LocalDate today) {
+                               String country, String state, String city, UUID scheduleId, Integer quantity, LocalDate experienceDate, LocalDate today) {
         validateRequiredIds(userId);
+
+        Country countryEnum = Country.valueOf(country);
 
         Order order = Order.builder()
                 .userId(userId)
@@ -74,7 +78,7 @@ public class Order extends BaseAuditEntity {
                 .build();
 
         OrderItem orderItem = OrderItem.create(order, planUnitId, productId, productName, price,
-                companyName, country, state, city, scheduleId, quantity, experienceDate, today);
+                companyName, countryEnum, state, city, scheduleId, quantity, experienceDate, today);
 
         order.addOrderItem(orderItem);
 
@@ -125,6 +129,14 @@ public class Order extends BaseAuditEntity {
         }
 
         this.orderItems.add(orderItem);
+    }
+
+    public OrderItem getSingleOrderItem() {
+        if (orderItems == null || orderItems.size() != 1) {
+            throw new BusinessException(OrderErrorCode.INVALID_ORDER_ITEM_COUNT);
+        }
+
+        return orderItems.get(0);
     }
 
     private static void validateRequiredIds(UUID userId) {
