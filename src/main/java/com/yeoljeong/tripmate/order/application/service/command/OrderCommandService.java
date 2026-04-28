@@ -76,7 +76,7 @@ public class OrderCommandService {
     }
 
     private void validateStock(Integer stock, Integer quantity) {
-        if (stock == null || quantity == null || stock < quantity) {
+        if (stock == null || quantity == null || quantity <= 0 || stock < quantity) {
             throw new BusinessException(OrderErrorCode.INSUFFICIENT_STOCK);
         }
     }
