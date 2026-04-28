@@ -29,7 +29,7 @@ public enum OrderErrorCode implements ErrorCode {
     SCHEDULE_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "주문 가능한 일정이 아닙니다."),
     INSUFFICIENT_STOCK(HttpStatus.BAD_REQUEST, "상품 재고가 부족합니다."),
     ALREADY_ORDERED_PLAN_UNIT(HttpStatus.CONFLICT, "이미 주문한 단위 일정입니다."),
-    REQUIRED_USER_ID(HttpStatus.BAD_REQUEST, "userId는 필수입니다."),;
+    REQUIRED_USER_ID(HttpStatus.BAD_REQUEST, "userId는 필수입니다.");
 
     private final HttpStatus status;
     private final String description;
