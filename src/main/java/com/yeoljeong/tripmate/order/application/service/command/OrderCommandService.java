@@ -25,6 +25,10 @@ public class OrderCommandService {
 
     public CreateOrderResult createOrder(CreateOrderCommand orderCommand) {
 
+        if (orderCommand.orderItems() == null || orderCommand.orderItems().size() != 1) {
+            throw new BusinessException(OrderErrorCode.INVALID_ORDER_ITEM_COUNT);
+        }
+
         CreateOrderCommand.OrderItemCommand orderItemCommand = orderCommand.orderItems().get(0);
 
         // 상품 정보 조회
