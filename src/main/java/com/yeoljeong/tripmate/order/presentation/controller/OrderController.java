@@ -7,10 +7,9 @@ import com.yeoljeong.tripmate.order.presentation.dto.response.OrderResponse;
 import com.yeoljeong.tripmate.response.ApiResponse;
 import com.yeoljeong.tripmate.response.constants.CommonSuccessCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,8 +19,8 @@ public class OrderController {
     private final OrderCommandService commandService;
 
     @PostMapping
-    public ApiResponse<OrderResponse> createOrder(@RequestBody OrderRequest request) {
-        CreateOrderResult result = commandService.createOrder(request.toCommand());
+    public ApiResponse<OrderResponse> createOrder(@RequestHeader("X-User-Id") UUID userId, @RequestBody OrderRequest request) {
+        CreateOrderResult result = commandService.createOrder(request.toCommand(userId));
 
         return ApiResponse.success(CommonSuccessCode.OK, OrderResponse.from(result));
     }

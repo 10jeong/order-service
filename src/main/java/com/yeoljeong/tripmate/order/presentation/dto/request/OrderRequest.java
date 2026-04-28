@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.UUID;
 
 public record OrderRequest(
-        UUID userId,
         List<OrderItemRequest> orderItems
 ) {
-    public CreateOrderCommand toCommand() {
+    public CreateOrderCommand toCommand(UUID userId) {
         return new CreateOrderCommand(
                 userId,
                 orderItems.stream()
