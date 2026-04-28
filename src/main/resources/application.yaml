@@ -3,7 +3,7 @@ spring:
     name: order-service
 
   datasource:
-    url: jdbc:postgresql://localhost:${DB_PORT:5432}/${DB_NAME:tripmate}
+    url: jdbc:postgresql://localhost:${DB_PORT:5432}/${DB_NAME:tripmate_postgres}
     username: ${DB_USER:tripmate}
     password: ${DB_PASSWORD:10jeong}
     driver-class-name: org.postgresql.Driver
