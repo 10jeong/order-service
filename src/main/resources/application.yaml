@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:${DB_PORT:5432}/${DB_NAME:tripmate_postgres}
     username: ${DB_USER:tripmate}
-    password: ${DB_PASSWORD:10jeong}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
 server:
