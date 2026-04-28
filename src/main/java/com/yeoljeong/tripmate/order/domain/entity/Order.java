@@ -68,7 +68,7 @@ public class Order extends BaseAuditEntity {
                                String country, String state, String city, UUID scheduleId, Integer quantity, LocalDate experienceDate, LocalDate today) {
         validateRequiredIds(userId);
 
-        Country countryEnum = Country.valueOf(country);
+        Country countryEnum = parseCountry(country);
 
         Order order = Order.builder()
                 .userId(userId)
@@ -137,6 +137,14 @@ public class Order extends BaseAuditEntity {
         }
 
         return orderItems.get(0);
+    }
+
+    private static Country parseCountry(String country) {
+        try {
+            return Country.valueOf(country);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new BusinessException(OrderErrorCode.INVALID_COUNTRY);
+        }
     }
 
     private static void validateRequiredIds(UUID userId) {
