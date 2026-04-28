@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
-public record ProductInfoCommand(
+public record OrderableProductCommand(
         UUID productId,
         String productName,
         String companyName,
@@ -15,6 +15,6 @@ public record ProductInfoCommand(
         String productStatus,
         UUID productScheduleId,
         Date date,
-        int stock,
+        Integer stock,
         String scheduleStatus
 ) {}

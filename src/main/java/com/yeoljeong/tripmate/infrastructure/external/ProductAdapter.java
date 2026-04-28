@@ -1,7 +1,7 @@
 package com.yeoljeong.tripmate.infrastructure.external;
 
 import com.yeoljeong.tripmate.application.client.ProductClient;
-import com.yeoljeong.tripmate.application.dto.command.ProductInfoCommand;
+import com.yeoljeong.tripmate.application.dto.command.OrderableProductCommand;
 import com.yeoljeong.tripmate.domain.exception.OrderErrorCode;
 import com.yeoljeong.tripmate.exception.BusinessException;
 import com.yeoljeong.tripmate.infrastructure.external.dto.ProductResponse;
@@ -19,7 +19,7 @@ public class ProductAdapter implements ProductClient {
     private final ProductFeignClient productFeignClient;
 
     @Override
-    public ProductInfoCommand getProduct(UUID productId, UUID scheduleId) {
+    public OrderableProductCommand getProduct(UUID productId, UUID scheduleId) {
         try {
             ApiResponse<ProductResponse> feignResponse = productFeignClient.getProduct(productId, scheduleId);
 
@@ -28,7 +28,7 @@ public class ProductAdapter implements ProductClient {
             }
             ProductResponse productResponse = feignResponse.getData();
 
-            return new ProductInfoCommand(productResponse.productId(), productResponse.productName(), productResponse.companyName(),
+            return new OrderableProductCommand(productResponse.productId(), productResponse.productName(), productResponse.companyName(),
                     productResponse.country(), productResponse.state(), productResponse.city(), productResponse.price(),
                     productResponse.productStatus(), productResponse.productScheduleId(), productResponse.date(), productResponse.stock(), productResponse.scheduleStatus());
         } catch (FeignException.NotFound e) {

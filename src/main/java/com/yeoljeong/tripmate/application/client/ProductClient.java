@@ -1,9 +1,9 @@
 package com.yeoljeong.tripmate.application.client;
 
-import com.yeoljeong.tripmate.application.dto.command.ProductInfoCommand;
+import com.yeoljeong.tripmate.application.dto.command.OrderableProductCommand;
 
 import java.util.UUID;
 
 public interface ProductClient {
-    ProductInfoCommand getProduct(UUID productId, UUID scheduleId);
+    OrderableProductCommand getProduct(UUID productId, UUID scheduleId);
 }

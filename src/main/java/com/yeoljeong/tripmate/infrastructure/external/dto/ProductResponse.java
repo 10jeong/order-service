@@ -15,6 +15,6 @@ public record ProductResponse(
         String productStatus,
         UUID productScheduleId,
         Date date,
-        int stock,
+        Integer stock,
         String scheduleStatus
 ) {}
