@@ -20,7 +20,9 @@ public enum OrderErrorCode implements ErrorCode {
     INVALID_ORDER(HttpStatus.BAD_REQUEST, "주문이 유효하지 않습니다."),
     INVALID_PRODUCT_INFO(HttpStatus.BAD_REQUEST, "상품 정보가 유효하지 않습니다."),
     INVALID_ORDER_ITEM(HttpStatus.BAD_REQUEST, "주문 항목이 유효하지 않습니다."),
-    INVALID_ORDER_ITEM_COUNT(HttpStatus.BAD_REQUEST, "주문 항목은 주문 하나 당 한 건만 존재해야 합니다.");
+    INVALID_ORDER_ITEM_COUNT(HttpStatus.BAD_REQUEST, "주문 항목은 주문 하나 당 한 건만 존재해야 합니다."),
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다."),
+    PRODUCT_SERVICE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 서비스 호출 에러입니다.");
 
     private final HttpStatus status;
     private final String description;
