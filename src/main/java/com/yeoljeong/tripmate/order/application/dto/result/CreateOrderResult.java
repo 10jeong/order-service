@@ -1,7 +1,7 @@
 package com.yeoljeong.tripmate.order.application.dto.result;
 
-import com.yeoljeong.tripmate.order.domain.entity.Order;
-import com.yeoljeong.tripmate.order.domain.entity.OrderItem;
+import com.yeoljeong.tripmate.order.domain.model.Order;
+import com.yeoljeong.tripmate.order.domain.model.OrderItem;
 import lombok.Builder;
 
 import java.math.BigDecimal;

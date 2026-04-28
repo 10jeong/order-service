@@ -1,6 +1,6 @@
 package com.yeoljeong.tripmate.order.infrastructure.persistence.repositoryImpl;
 
-import com.yeoljeong.tripmate.order.domain.entity.Order;
+import com.yeoljeong.tripmate.order.domain.model.Order;
 import com.yeoljeong.tripmate.order.domain.repository.OrderRepository;
 import com.yeoljeong.tripmate.order.infrastructure.persistence.jpa.OrderJpaRepository;
 import lombok.RequiredArgsConstructor;

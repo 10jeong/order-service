@@ -4,7 +4,7 @@ import com.yeoljeong.tripmate.order.application.client.ProductClient;
 import com.yeoljeong.tripmate.order.application.dto.command.CreateOrderCommand;
 import com.yeoljeong.tripmate.order.application.dto.command.OrderableProductCommand;
 import com.yeoljeong.tripmate.order.application.dto.result.CreateOrderResult;
-import com.yeoljeong.tripmate.order.domain.entity.Order;
+import com.yeoljeong.tripmate.order.domain.model.Order;
 import com.yeoljeong.tripmate.order.domain.exception.OrderErrorCode;
 import com.yeoljeong.tripmate.order.domain.repository.OrderRepository;
 import com.yeoljeong.tripmate.exception.BusinessException;
