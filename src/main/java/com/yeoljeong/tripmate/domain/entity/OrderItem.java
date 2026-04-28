@@ -51,7 +51,7 @@ public class OrderItem extends BaseAuditEntity {
     private ProductInfo productInfo;
 
     @Column(nullable = false)
-    private int quantity;
+    private Integer quantity;
 
     @Column(name = "experience_date", nullable = false)
     private LocalDate experienceDate;
