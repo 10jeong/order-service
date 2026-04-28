@@ -23,7 +23,7 @@ public class OrderCommandService {
     private final OrderRepository orderRepository;
     private final ProductClient productClient;
 
-    public CreateOrderResult creatOrder(CreateOrderCommand orderCommand) {
+    public CreateOrderResult createOrder(CreateOrderCommand orderCommand) {
 
         CreateOrderCommand.OrderItemCommand orderItemCommand = orderCommand.orderItems().get(0);
 
@@ -50,7 +50,7 @@ public class OrderCommandService {
                 productCommand.city(),
                 productCommand.productScheduleId(),
                 orderItemCommand.quantity(),
-                orderItemCommand.experienceDate(),
+                productCommand.date(),
                 LocalDate.now()
         );
 

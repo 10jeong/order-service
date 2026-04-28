@@ -1,6 +1,7 @@
 package com.yeoljeong.tripmate.application.dto.command;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -14,7 +15,7 @@ public record OrderableProductCommand(
         BigDecimal price,
         String productStatus,
         UUID productScheduleId,
-        Date date,
+        LocalDate date,
         Integer stock,
         String scheduleStatus
 ) {}
