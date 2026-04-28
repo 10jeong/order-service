@@ -8,14 +8,6 @@ spring:
     password: ${DB_PASSWORD:10jeong}
     driver-class-name: org.postgresql.Driver
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-    show-sql: true
-
 server:
   port: 0
 
