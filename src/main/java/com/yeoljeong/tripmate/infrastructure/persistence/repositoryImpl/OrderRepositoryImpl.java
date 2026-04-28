@@ -1,7 +1,8 @@
-package com.yeoljeong.tripmate.infrastructure.persistence.repository;
+package com.yeoljeong.tripmate.infrastructure.persistence.repositoryImpl;
 
 import com.yeoljeong.tripmate.domain.entity.Order;
 import com.yeoljeong.tripmate.domain.repository.OrderRepository;
+import com.yeoljeong.tripmate.infrastructure.persistence.jpa.OrderJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.yeoljeong.tripmate.infrastructure.persistence.repository;
+package com.yeoljeong.tripmate.infrastructure.persistence.jpa;
 
 import com.yeoljeong.tripmate.domain.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
