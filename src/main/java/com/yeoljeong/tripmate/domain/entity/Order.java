@@ -35,8 +35,7 @@ import java.util.UUID;
 public class Order extends BaseAuditEntity {
 
     @Id
-    @GeneratedValue
-    @UuidGenerator
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false)
     private UUID id;
 
