@@ -1,6 +1,6 @@
 package com.yeoljeong.tripmate.order.domain.repository;
 
-import com.yeoljeong.tripmate.order.domain.entity.Order;
+import com.yeoljeong.tripmate.order.domain.model.Order;
 
 import java.util.UUID;
 

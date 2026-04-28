@@ -1,4 +1,4 @@
-package com.yeoljeong.tripmate.order.domain.entity;
+package com.yeoljeong.tripmate.order.domain.model;
 
 import com.yeoljeong.tripmate.domain.BaseAuditEntity;
 import com.yeoljeong.tripmate.order.domain.enums.Country;

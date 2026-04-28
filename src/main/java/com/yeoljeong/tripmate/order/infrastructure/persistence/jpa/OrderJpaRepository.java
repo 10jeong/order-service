@@ -1,6 +1,6 @@
 package com.yeoljeong.tripmate.order.infrastructure.persistence.jpa;
 
-import com.yeoljeong.tripmate.order.domain.entity.Order;
+import com.yeoljeong.tripmate.order.domain.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
