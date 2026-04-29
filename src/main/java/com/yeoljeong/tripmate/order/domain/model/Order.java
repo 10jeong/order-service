@@ -21,9 +21,9 @@ import java.util.UUID;
 /*
     순수 도메인 요구사항 (Order)
     - 주문은 주문자 정보를 가진다.
-    - 주문 생성 시 CONFIRMED 상태의 주문을 생성한다.
-    - CONFIRMED 상태의 주문은 완료 처리 시 COMPLETED 상태로 변경된다.
-    - CONFIRMED 또는 COMPLETED 상태의 주문은 취소 처리 시 CANCELLED 상태로 변경된다.
+    - 주문 생성 시 CREATED 상태의 주문을 생성한다.
+    - CREATED 상태의 주문은 완료 처리 시 COMPLETED 상태로 변경된다.
+    - CREATED 또는 COMPLETED 상태의 주문은 취소 처리 시 CANCELLED 상태로 변경된다.
     - 주문 취소 시 주문 취소 시각과 취소 사유를 저장한다.
     - 주문 상태가 CANCELLED인 경우 cancelled_at과 cancel_reason은 반드시 존재해야 한다.
     - 주문 상태가 CANCELLED가 아닌 경우 cancelled_at과 cancel_reason은 null이어야 한다.
@@ -72,7 +72,7 @@ public class Order extends BaseAuditEntity {
 
         Order order = Order.builder()
                 .userId(userId)
-                .orderStatus(OrderStatus.CONFIRMED)
+                .orderStatus(OrderStatus.CREATED)
                 .cancelledAt(null)
                 .cancelReason(null)
                 .build();
@@ -85,18 +85,18 @@ public class Order extends BaseAuditEntity {
         return order;
     }
 
-    // CONFIRMED -> COMPLETED
+    // CREATED -> COMPLETED
     public void complete() {
-        if (this.orderStatus != OrderStatus.CONFIRMED) {
+        if (this.orderStatus != OrderStatus.CREATED) {
             throw new BusinessException(OrderErrorCode.INVALID_ORDER_STATUS);
         }
 
         this.orderStatus = OrderStatus.COMPLETED;
     }
 
-    // CONFIRMED -> CANCELLED or COMPLETED -> CANCELLED
+    // CREATED -> CANCELLED or COMPLETED -> CANCELLED
     public void cancel(LocalDateTime cancelledAt, String cancelReason) {
-        if (this.orderStatus != OrderStatus.CONFIRMED && this.orderStatus != OrderStatus.COMPLETED) {
+        if (this.orderStatus != OrderStatus.CREATED && this.orderStatus != OrderStatus.COMPLETED) {
             throw new BusinessException(OrderErrorCode.INVALID_ORDER_STATUS);
         }
 
