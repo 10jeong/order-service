@@ -6,6 +6,7 @@ import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -19,13 +20,17 @@ public record GetOrderListResult(
         LocalDate experienceDate
 ) {
     public static GetOrderListResult from(Order order) {
-        OrderItem firstOrderItem = order.getOrderItems().get(0);
+        List<OrderItem> orderItems = order.getOrderItems();
+        if (orderItems == null || orderItems.isEmpty()) {
+                throw new IllegalStateException("Order has no items. orderId=" + order.getId());
+            }
+        OrderItem firstOrderItem = orderItems.get(0);
 
-        int totalQuantity = order.getOrderItems().stream()
+        int totalQuantity = orderItems.stream()
                 .mapToInt(OrderItem::getQuantity)
                 .sum();
 
-        BigDecimal totalPrice = order.getOrderItems().stream()
+        BigDecimal totalPrice = orderItems.stream()
                 .map(orderItem -> orderItem.getProductInfo().getPrice()
                         .multiply(BigDecimal.valueOf(orderItem.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
