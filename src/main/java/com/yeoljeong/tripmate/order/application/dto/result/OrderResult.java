@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Builder
-public record CreateOrderResult(
+public record OrderResult(
         UUID orderId,
         UUID userId,
         String orderStatus,
@@ -19,8 +19,8 @@ public record CreateOrderResult(
         LocalDateTime cancelledAt,
         String cancelReason
 ) {
-    public static CreateOrderResult from(Order order) {
-        return CreateOrderResult.builder()
+    public static OrderResult from(Order order) {
+        return OrderResult.builder()
                 .orderId(order.getId())
                 .userId(order.getUserId())
                 .orderStatus(order.getOrderStatus().name())
