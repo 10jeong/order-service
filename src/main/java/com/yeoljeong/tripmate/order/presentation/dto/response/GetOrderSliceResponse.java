@@ -11,9 +11,7 @@ public record GetOrderSliceResponse(
         List<GetOrderListResponse> content,
         int page,
         int size,
-        boolean hasNext,
-        boolean isFirst,
-        boolean isLast
+        boolean hasNext
 ) {
     public static GetOrderSliceResponse from(Slice<GetOrderListResult> result) {
         return GetOrderSliceResponse.builder()
@@ -23,7 +21,6 @@ public record GetOrderSliceResponse(
                 .page(result.getNumber())
                 .size(result.getSize())
                 .hasNext(result.hasNext())
-                .isFirst(result.isFirst())
                 .build();
     }
 }
