@@ -1,6 +1,6 @@
 package com.yeoljeong.tripmate.order.presentation.dto.response;
 
-import com.yeoljeong.tripmate.order.application.dto.result.CreateOrderResult;
+import com.yeoljeong.tripmate.order.application.dto.result.OrderResult;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,7 +16,7 @@ public record OrderResponse(
         LocalDateTime cancelledAt,
         String cancelReason
 ) {
-    public static OrderResponse from(CreateOrderResult result) {
+    public static OrderResponse from(OrderResult result) {
         return new OrderResponse(
                 result.orderId(),
                 result.userId(),
@@ -43,7 +43,7 @@ public record OrderResponse(
             Integer quantity,
             LocalDate experienceDate
     ) {
-        public static OrderItemResponse from(CreateOrderResult.OrderItemResult result) {
+        public static OrderItemResponse from(OrderResult.OrderItemResult result) {
             return new OrderItemResponse(
                     result.orderItemId(),
                     result.planUnitId(),

@@ -3,14 +3,14 @@ package com.yeoljeong.tripmate.order.application.service.command;
 import com.yeoljeong.tripmate.order.application.client.ProductClient;
 import com.yeoljeong.tripmate.order.application.dto.command.CreateOrderCommand;
 import com.yeoljeong.tripmate.order.application.dto.command.OrderableProductCommand;
-import com.yeoljeong.tripmate.order.application.dto.result.CreateOrderResult;
+import com.yeoljeong.tripmate.order.application.dto.result.OrderResult;
 import com.yeoljeong.tripmate.order.domain.model.Order;
 import com.yeoljeong.tripmate.order.domain.exception.OrderErrorCode;
 import com.yeoljeong.tripmate.order.domain.repository.OrderRepository;
 import com.yeoljeong.tripmate.exception.BusinessException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -23,7 +23,7 @@ public class OrderCommandService {
     private final OrderRepository orderRepository;
     private final ProductClient productClient;
 
-    public CreateOrderResult createOrder(CreateOrderCommand orderCommand) {
+    public OrderResult createOrder(CreateOrderCommand orderCommand) {
 
         if (orderCommand.orderItems() == null || orderCommand.orderItems().size() != 1) {
             throw new BusinessException(OrderErrorCode.INVALID_ORDER_ITEM_COUNT);
@@ -60,7 +60,7 @@ public class OrderCommandService {
 
         Order savedOrder = orderRepository.save(order);
 
-        return CreateOrderResult.from(savedOrder);
+        return OrderResult.from(savedOrder);
     }
 
     private void validateProductAvailable(String productStatus) {
