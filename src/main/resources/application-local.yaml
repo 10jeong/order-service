@@ -5,4 +5,5 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        default_schema: orders
     show-sql: true
