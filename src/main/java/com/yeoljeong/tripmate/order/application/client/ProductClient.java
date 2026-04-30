@@ -5,5 +5,5 @@ import com.yeoljeong.tripmate.order.application.dto.command.OrderableProductComm
 import java.util.UUID;
 
 public interface ProductClient {
-    OrderableProductCommand getProduct(UUID productId, UUID scheduleId);
+    OrderableProductCommand getSchedule(UUID productId, UUID scheduleId);
 }

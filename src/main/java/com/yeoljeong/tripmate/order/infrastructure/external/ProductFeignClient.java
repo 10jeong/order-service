@@ -10,5 +10,5 @@ import java.util.UUID;
 @FeignClient(name = "company-service", path = "/internal/products")
 public interface ProductFeignClient {
     @GetMapping("/{productId}/schedules/{scheduleId}")
-    ProductResponse getProduct(@PathVariable("productId") UUID productId,@PathVariable("scheduleId") UUID scheduleId);
+    ProductResponse getSchedule(@PathVariable("productId") UUID productId,@PathVariable("scheduleId") UUID scheduleId);
 }
