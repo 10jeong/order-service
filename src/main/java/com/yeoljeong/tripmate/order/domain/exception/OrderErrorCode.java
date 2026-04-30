@@ -30,7 +30,10 @@ public enum OrderErrorCode implements ErrorCode {
     INSUFFICIENT_STOCK(HttpStatus.BAD_REQUEST, "상품 재고가 부족합니다."),
     ALREADY_ORDERED_PLAN_UNIT(HttpStatus.CONFLICT, "이미 주문한 단위 일정입니다."),
     REQUIRED_USER_ID(HttpStatus.BAD_REQUEST, "userId는 필수입니다."),
-    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 이력을 찾을 수 없습니다.");
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "주문 이력을 찾을 수 없습니다."),
+    PLAN_PARTICIPATION_NOT_FOUND(HttpStatus.NOT_FOUND, "참여 이력을 찾을 수 없습니다."),
+    PLAN_SERVICE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "일정 서비스 호출 에러입니다."),
+    PLAN_PARTICIPATION_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "참여되지 않은 일정의 상품은 구매할 수 없습니다.");
 
     private final HttpStatus status;
     private final String description;

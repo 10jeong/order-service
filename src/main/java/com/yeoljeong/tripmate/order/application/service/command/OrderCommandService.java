@@ -1,6 +1,8 @@
 package com.yeoljeong.tripmate.order.application.service.command;
 
+import com.yeoljeong.tripmate.order.application.client.PlanClient;
 import com.yeoljeong.tripmate.order.application.client.ProductClient;
+import com.yeoljeong.tripmate.order.application.dto.command.ApprovalUserCommand;
 import com.yeoljeong.tripmate.order.application.dto.command.CreateOrderCommand;
 import com.yeoljeong.tripmate.order.application.dto.command.OrderableProductCommand;
 import com.yeoljeong.tripmate.order.application.dto.result.OrderResult;
@@ -22,6 +24,7 @@ public class OrderCommandService {
 
     private final OrderRepository orderRepository;
     private final ProductClient productClient;
+    private final PlanClient planClient;
 
     public OrderResult createOrder(CreateOrderCommand orderCommand) {
 
@@ -30,6 +33,12 @@ public class OrderCommandService {
         }
 
         CreateOrderCommand.OrderItemCommand orderItemCommand = orderCommand.orderItems().get(0);
+
+        // 참여 여부 조회
+        ApprovalUserCommand approvalUserCommand = planClient.getPlanParticipation(orderCommand.userId(), orderItemCommand.planUnitId());
+
+        // 참여 가능 상태인지 검증
+        validateParticipationAvailable(approvalUserCommand.status());
 
         // 상품 정보 조회
         OrderableProductCommand productCommand = productClient.getSchedule(orderCommand.userId(), orderItemCommand.productId(), orderItemCommand.scheduleId());
@@ -60,6 +69,12 @@ public class OrderCommandService {
         Order savedOrder = orderRepository.save(order);
 
         return OrderResult.from(savedOrder);
+    }
+
+    private void validateParticipationAvailable(String participationStatus) {
+        if (!"APPROVAL".equals(participationStatus)) {
+            throw new BusinessException(OrderErrorCode.PLAN_PARTICIPATION_NOT_AVAILABLE);
+        }
     }
 
     private void validateProductAvailable(String productStatus) {
