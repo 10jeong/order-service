@@ -2,7 +2,6 @@ package com.yeoljeong.tripmate.order.infrastructure.external.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.UUID;
 
 public record ProductResponse(
@@ -13,7 +12,7 @@ public record ProductResponse(
         String city,
         BigDecimal price,
         String productStatus,
-        UUID productScheduleId,
+        UUID scheduleId,
         LocalDate date,
         Integer stock,
         String scheduleStatus
