@@ -28,7 +28,7 @@ public class ProductAdapter implements ProductClient {
             }
             ProductResponse productResponse = feignResponse.getData();
 
-            return new OrderableProductCommand(productResponse.productId(), productResponse.productName(), productResponse.companyName(),
+            return new OrderableProductCommand(productResponse.productId(), productResponse.productName(),
                     productResponse.country(), productResponse.state(), productResponse.city(), productResponse.price(),
                     productResponse.productStatus(), productResponse.productScheduleId(), productResponse.date(), productResponse.stock(), productResponse.scheduleStatus());
         } catch (FeignException.NotFound e) {

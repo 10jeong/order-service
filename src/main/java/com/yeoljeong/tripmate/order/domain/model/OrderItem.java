@@ -57,16 +57,16 @@ public class OrderItem extends BaseAuditEntity {
     private LocalDate experienceDate;
 
     @Builder
-    private OrderItem(Order order, UUID planUnitId, UUID productId, String productName, BigDecimal price, String companyName,
+    private OrderItem(Order order, UUID planUnitId, UUID productId, String productName, BigDecimal price,
                       Country country, String state, String city, UUID scheduleId, int quantity, LocalDate experienceDate) {
         this.order = order;
         this.planUnitId = planUnitId;
-        this.productInfo = ProductInfo.of(productId, productName, price, companyName, country, state, city, scheduleId);
+        this.productInfo = ProductInfo.of(productId, productName, price, country, state, city, scheduleId);
         this.quantity = quantity;
         this.experienceDate = experienceDate;
     }
 
-    static OrderItem create(Order order, UUID planUnitId, UUID productId, String productName, BigDecimal price, String companyName,
+    static OrderItem create(Order order, UUID planUnitId, UUID productId, String productName, BigDecimal price,
                             Country country, String state, String city, UUID scheduleId, int quantity, LocalDate experienceDate, LocalDate today) {
         validateOrder(order);
         validatePrice(price);
@@ -74,7 +74,7 @@ public class OrderItem extends BaseAuditEntity {
         validateQuantity(quantity);
         validateExperienceDate(experienceDate, today);
         validateRequiredIds(planUnitId, productId, scheduleId);
-        validateRequiredTexts(productName, companyName, state, city);
+        validateRequiredTexts(productName, state, city);
 
         return OrderItem.builder()
                 .order(order)
@@ -82,7 +82,6 @@ public class OrderItem extends BaseAuditEntity {
                 .productId(productId)
                 .productName(productName)
                 .price(price)
-                .companyName(companyName)
                 .country(country)
                 .state(state)
                 .city(city)
@@ -132,9 +131,8 @@ public class OrderItem extends BaseAuditEntity {
         }
     }
 
-    private static void validateRequiredTexts(String productName, String companyName, String state, String city) {
+    private static void validateRequiredTexts(String productName, String state, String city) {
         if (isBlank(productName) || productName.length() > 255
-                || isBlank(companyName) || companyName.length() > 100
                 || isBlank(state) || state.length() > 255
                 || isBlank(city) || city.length() > 255) {
             throw new BusinessException(OrderErrorCode.INVALID_TEXT_FIELD);

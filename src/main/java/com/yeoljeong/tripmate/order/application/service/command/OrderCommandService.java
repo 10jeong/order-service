@@ -48,7 +48,6 @@ public class OrderCommandService {
                 productCommand.productId(),
                 productCommand.productName(),
                 productCommand.price(),
-                productCommand.companyName(),
                 productCommand.country(),
                 productCommand.state(),
                 productCommand.city(),
