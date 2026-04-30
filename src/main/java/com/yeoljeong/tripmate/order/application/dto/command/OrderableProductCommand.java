@@ -8,7 +8,6 @@ import java.util.UUID;
 public record OrderableProductCommand(
         UUID productId,
         String productName,
-        String companyName,
         String country,
         String state,
         String city,

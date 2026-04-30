@@ -39,7 +39,6 @@ public record OrderResult(
             UUID productId,
             String productName,
             BigDecimal price,
-            String companyName,
             String country,
             String state,
             String city,
@@ -54,7 +53,6 @@ public record OrderResult(
                     .productId(orderItem.getProductInfo().getProductId())
                     .productName(orderItem.getProductInfo().getProductName())
                     .price(orderItem.getProductInfo().getPrice())
-                    .companyName(orderItem.getProductInfo().getCompanyName())
                     .country(orderItem.getProductInfo().getCountry().name())
                     .state(orderItem.getProductInfo().getState())
                     .city(orderItem.getProductInfo().getCity())

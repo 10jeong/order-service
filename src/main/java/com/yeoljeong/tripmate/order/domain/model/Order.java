@@ -64,7 +64,7 @@ public class Order extends BaseAuditEntity {
         this.cancelReason = cancelReason;
     }
 
-    public static Order create(UUID userId, UUID planUnitId, UUID productId, String productName, BigDecimal price, String companyName,
+    public static Order create(UUID userId, UUID planUnitId, UUID productId, String productName, BigDecimal price,
                                String country, String state, String city, UUID scheduleId, Integer quantity, LocalDate experienceDate, LocalDate today) {
         validateRequiredIds(userId);
 
@@ -78,7 +78,7 @@ public class Order extends BaseAuditEntity {
                 .build();
 
         OrderItem orderItem = OrderItem.create(order, planUnitId, productId, productName, price,
-                companyName, countryEnum, state, city, scheduleId, quantity, experienceDate, today);
+                countryEnum, state, city, scheduleId, quantity, experienceDate, today);
 
         order.addOrderItem(orderItem);
 
