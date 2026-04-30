@@ -13,7 +13,7 @@ public record ProductResponse(
         String city,
         BigDecimal price,
         String productStatus,
-        UUID productScheduleId,
+        UUID scheduleId,
         LocalDate date,
         Integer stock,
         String scheduleStatus

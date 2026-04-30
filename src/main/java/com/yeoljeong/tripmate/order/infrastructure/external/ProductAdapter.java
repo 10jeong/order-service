@@ -30,7 +30,7 @@ public class ProductAdapter implements ProductClient {
 
             return new OrderableProductCommand(productResponse.productId(), productResponse.productName(),
                     productResponse.country(), productResponse.state(), productResponse.city(), productResponse.price(),
-                    productResponse.productStatus(), productResponse.productScheduleId(), productResponse.date(), productResponse.stock(), productResponse.scheduleStatus());
+                    productResponse.productStatus(), productResponse.scheduleId(), productResponse.date(), productResponse.stock(), productResponse.scheduleStatus());
         } catch (FeignException.NotFound e) {
             throw new BusinessException(OrderErrorCode.PRODUCT_NOT_FOUND);
 
