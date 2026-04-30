@@ -21,12 +21,11 @@ public class ProductAdapter implements ProductClient {
     @Override
     public OrderableProductCommand getProduct(UUID productId, UUID scheduleId) {
         try {
-            ApiResponse<ProductResponse> feignResponse = productFeignClient.getProduct(productId, scheduleId);
+            ProductResponse productResponse = productFeignClient.getProduct(productId, scheduleId);
 
-            if (feignResponse == null || feignResponse.getData() == null) {
+            if (productResponse == null) {
                 throw new BusinessException(OrderErrorCode.PRODUCT_NOT_FOUND);
             }
-            ProductResponse productResponse = feignResponse.getData();
 
             return new OrderableProductCommand(productResponse.productId(), productResponse.productName(),
                     productResponse.country(), productResponse.state(), productResponse.city(), productResponse.price(),
