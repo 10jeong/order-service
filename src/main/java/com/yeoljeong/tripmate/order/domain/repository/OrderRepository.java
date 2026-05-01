@@ -18,5 +18,8 @@ public interface OrderRepository {
     // 사용자의 주문 목록 조회
     Slice<Order> findAllByUserId(UUID userId, Pageable pageable);
 
+    // 주문 단건 조회
+    Optional<Order> findById(UUID orderId);
+
     Order save(Order order);
 }

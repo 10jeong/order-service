@@ -152,4 +152,11 @@ public class Order extends BaseAuditEntity {
             throw new BusinessException(OrderErrorCode.INVALID_ID_FIELD);
         }
     }
+
+    public BigDecimal getTotalAmount() {
+        BigDecimal price = this.orderItems.get(0).getProductInfo().getPrice();
+        Integer quantity = this.orderItems.get(0).getQuantity();
+
+        return price.multiply(BigDecimal.valueOf(quantity));
+    }
 }
