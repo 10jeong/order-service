@@ -19,7 +19,7 @@ public record PayableOrderResult(
                 .orderId(order.getId())
                 .userId(order.getUserId())
                 .orderName(order.getOrderItems().get(0).getProductInfo().getProductName())
-                .amount(order.getOrderItems().get(0).getProductInfo().getPrice())
+                .amount(order.getTotalAmount())
                 .orderStatus(order.getOrderStatus().toString())
                 .build();
     }
