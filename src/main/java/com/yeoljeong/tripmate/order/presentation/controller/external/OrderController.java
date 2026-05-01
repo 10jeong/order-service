@@ -1,4 +1,4 @@
-package com.yeoljeong.tripmate.order.presentation.controller.externral;
+package com.yeoljeong.tripmate.order.presentation.controller.external;
 
 import com.yeoljeong.tripmate.order.application.dto.result.OrderResult;
 import com.yeoljeong.tripmate.order.application.dto.result.GetOrderListResult;
