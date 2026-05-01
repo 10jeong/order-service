@@ -33,6 +33,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public Optional<Order> findById(UUID orderId) {
+        return orderJpaRepository.findById(orderId);
+    }
+
+    @Override
     public Order save(Order order) {
         return orderJpaRepository.save(order);
     }
