@@ -20,7 +20,7 @@ public class PlanAdapter implements PlanClient {
     @Override
     public ApprovalUserCommand getPlanParticipation(UUID userId, UUID planUnitId) {
         try {
-            PlanParticipationResponse planParticipationResponse = planFeignClient.getPlanParticipation(userId.toString(), "USER", planUnitId, userId);
+            PlanParticipationResponse planParticipationResponse = planFeignClient.getPlanParticipation(planUnitId, userId);
 
             if (planParticipationResponse == null) {
                 throw new BusinessException(OrderErrorCode.PLAN_PARTICIPATION_NOT_FOUND);

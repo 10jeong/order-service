@@ -18,9 +18,9 @@ public class ProductAdapter implements ProductClient {
     private final ProductFeignClient productFeignClient;
 
     @Override
-    public OrderableProductCommand getSchedule(UUID userId, UUID productId, UUID scheduleId) {
+    public OrderableProductCommand getSchedule(UUID productId, UUID scheduleId) {
         try {
-            ProductResponse productResponse = productFeignClient.getSchedule(userId.toString(), "USER", productId, scheduleId);
+            ProductResponse productResponse = productFeignClient.getSchedule(productId, scheduleId);
 
             if (productResponse == null) {
                 throw new BusinessException(OrderErrorCode.PRODUCT_NOT_FOUND);

@@ -41,7 +41,7 @@ public class OrderCommandService {
         validateParticipationAvailable(approvalUserCommand.status());
 
         // 상품 정보 조회
-        OrderableProductCommand productCommand = productClient.getSchedule(orderCommand.userId(), orderItemCommand.productId(), orderItemCommand.scheduleId());
+        OrderableProductCommand productCommand = productClient.getSchedule(orderItemCommand.productId(), orderItemCommand.scheduleId());
 
         // 이미 구매한 단위 일정의 상품인지 확인
         validateDuplicateOrder(orderCommand.userId(), orderItemCommand.planUnitId());
