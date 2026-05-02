@@ -71,6 +71,14 @@ public class OrderCommandService {
         return OrderResult.from(savedOrder);
     }
 
+    // 결제 완료 이벤트 수신 후 동작
+    public void completePayment(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
+
+        order.complete();
+    }
+
     private void validateParticipationAvailable(String participationStatus) {
         if (!"APPROVAL".equals(participationStatus)) {
             throw new BusinessException(OrderErrorCode.PLAN_PARTICIPATION_NOT_AVAILABLE);
