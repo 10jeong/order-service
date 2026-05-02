@@ -90,6 +90,10 @@ public class OrderCommandService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
 
+        if (order.isCompleted()) {
+            return;
+        }
+
         order.complete();
     }
 
