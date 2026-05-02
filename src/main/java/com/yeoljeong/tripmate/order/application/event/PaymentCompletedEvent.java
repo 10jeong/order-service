@@ -1,4 +1,4 @@
-package com.yeoljeong.tripmate.order.infrastructure.messaging.event;
+package com.yeoljeong.tripmate.order.application.event;
 
 import java.util.UUID;
 
