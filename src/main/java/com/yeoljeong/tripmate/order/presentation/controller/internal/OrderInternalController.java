@@ -4,10 +4,11 @@ package com.yeoljeong.tripmate.order.presentation.controller.internal;
 import com.yeoljeong.tripmate.order.application.dto.result.PayableOrderResult;
 import com.yeoljeong.tripmate.order.application.service.query.OrderQueryService;
 import com.yeoljeong.tripmate.order.presentation.dto.response.PayableOrderResponse;
-import com.yeoljeong.tripmate.response.ApiResponse;
-import com.yeoljeong.tripmate.response.constants.CommonSuccessCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
