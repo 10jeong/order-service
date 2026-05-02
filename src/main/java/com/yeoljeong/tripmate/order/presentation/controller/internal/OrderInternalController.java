@@ -18,10 +18,10 @@ public class OrderInternalController {
 
     private final OrderQueryService queryService;
 
-    @GetMapping("{orderId}/payments")
-    public ApiResponse<PayableOrderResponse> getPayableOrder(@RequestHeader("X-User-Id") UUID userId, @PathVariable("orderId") UUID orderId) {
+    @GetMapping("/{orderId}/payment")
+    public PayableOrderResponse getPayableOrder(@PathVariable("orderId") UUID orderId) {
         PayableOrderResult result = queryService.getPayableOrder(orderId);
 
-        return ApiResponse.success(CommonSuccessCode.OK, PayableOrderResponse.from(result));
+        return PayableOrderResponse.from(result);
     }
 }
