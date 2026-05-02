@@ -159,4 +159,8 @@ public class Order extends BaseAuditEntity {
 
         return price.multiply(BigDecimal.valueOf(quantity));
     }
+
+    public boolean isCompleted() {
+        return this.orderStatus == OrderStatus.COMPLETED;
+    }
 }
