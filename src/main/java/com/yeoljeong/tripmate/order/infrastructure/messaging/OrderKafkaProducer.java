@@ -1,7 +1,7 @@
 package com.yeoljeong.tripmate.order.infrastructure.messaging;
 
 import com.yeoljeong.tripmate.event.enums.OrderTopic;
-import com.yeoljeong.tripmate.order.infrastructure.messaging.event.OrderCreatedEvent;
+import com.yeoljeong.tripmate.event.OrderCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
