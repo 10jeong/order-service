@@ -1,16 +1,18 @@
 package com.yeoljeong.tripmate.order.application.service.command;
 
+import com.yeoljeong.tripmate.event.OrderCreatedEvent;
+import com.yeoljeong.tripmate.exception.BusinessException;
 import com.yeoljeong.tripmate.order.application.client.PlanClient;
 import com.yeoljeong.tripmate.order.application.client.ProductClient;
 import com.yeoljeong.tripmate.order.application.dto.command.ApprovalUserCommand;
 import com.yeoljeong.tripmate.order.application.dto.command.CreateOrderCommand;
 import com.yeoljeong.tripmate.order.application.dto.command.OrderableProductCommand;
 import com.yeoljeong.tripmate.order.application.dto.result.OrderResult;
-import com.yeoljeong.tripmate.order.domain.model.Order;
 import com.yeoljeong.tripmate.order.domain.exception.OrderErrorCode;
+import com.yeoljeong.tripmate.order.domain.model.Order;
 import com.yeoljeong.tripmate.order.domain.repository.OrderRepository;
-import com.yeoljeong.tripmate.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ public class OrderCommandService {
     private final OrderRepository orderRepository;
     private final ProductClient productClient;
     private final PlanClient planClient;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public OrderResult createOrder(CreateOrderCommand orderCommand) {
 
@@ -67,6 +70,17 @@ public class OrderCommandService {
         );
 
         Order savedOrder = orderRepository.save(order);
+
+        OrderCreatedEvent event = new OrderCreatedEvent(
+                UUID.randomUUID(),
+                savedOrder.getOrderItems().get(0).getPlanUnitId(),
+                savedOrder.getOrderItems().get(0).getProductInfo().getProductId(),
+                savedOrder.getOrderItems().get(0).getProductInfo().getScheduleId(),
+                savedOrder.getOrderItems().get(0).getQuantity()
+        );
+
+        // 주문 생성 이벤트 발행
+        applicationEventPublisher.publishEvent(event);
 
         return OrderResult.from(savedOrder);
     }
