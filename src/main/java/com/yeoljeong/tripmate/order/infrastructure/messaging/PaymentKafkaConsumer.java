@@ -2,7 +2,7 @@ package com.yeoljeong.tripmate.order.infrastructure.messaging;
 
 import com.yeoljeong.tripmate.event.enums.PaymentTopic;
 import com.yeoljeong.tripmate.order.application.service.command.OrderCommandService;
-import com.yeoljeong.tripmate.order.application.event.PaymentCompletedEvent;
+import com.yeoljeong.tripmate.event.PaymentCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
