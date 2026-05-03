@@ -73,6 +73,7 @@ public class OrderCommandService {
 
         OrderCreatedEvent event = new OrderCreatedEvent(
                 UUID.randomUUID(),
+                savedOrder.getUserId(),
                 savedOrder.getOrderItems().get(0).getPlanUnitId(),
                 savedOrder.getOrderItems().get(0).getProductInfo().getProductId(),
                 savedOrder.getOrderItems().get(0).getProductInfo().getScheduleId(),
@@ -116,7 +117,10 @@ public class OrderCommandService {
     }
 
     private void validateStock(Integer stock, Integer quantity) {
-        if (stock == null || quantity == null || quantity <= 0 || stock < quantity) {
+        if (quantity == null || quantity != 1) {
+            throw new BusinessException(OrderErrorCode.INVALID_QUANTITY);
+        }
+        if (stock == null || stock < quantity) {
             throw new BusinessException(OrderErrorCode.INSUFFICIENT_STOCK);
         }
     }
