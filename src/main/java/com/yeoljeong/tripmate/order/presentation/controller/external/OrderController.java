@@ -1,5 +1,7 @@
 package com.yeoljeong.tripmate.order.presentation.controller.external;
 
+import com.yeoljeong.tripmate.auth.annotation.LoginUser;
+import com.yeoljeong.tripmate.auth.context.UserContext;
 import com.yeoljeong.tripmate.order.application.dto.result.OrderResult;
 import com.yeoljeong.tripmate.order.application.dto.result.GetOrderListResult;
 import com.yeoljeong.tripmate.order.application.service.command.OrderCommandService;
@@ -28,24 +30,24 @@ public class OrderController {
 
     // 주문 생성
     @PostMapping
-    public ApiResponse<OrderResponse> createOrder(@RequestHeader("X-User-Id") UUID userId, @RequestBody OrderRequest request) {
-        OrderResult result = commandService.createOrder(request.toCommand(userId));
+    public ApiResponse<OrderResponse> createOrder(@LoginUser UserContext userContext, @RequestBody OrderRequest request) {
+        OrderResult result = commandService.createOrder(request.toCommand(userContext.userId()));
 
         return ApiResponse.success(CommonSuccessCode.OK, OrderResponse.from(result));
     }
 
     // 주문 단건 조회
     @GetMapping("/{orderId}")
-    public ApiResponse<OrderResponse> getOrder(@RequestHeader("X-User-Id") UUID userId, @PathVariable("orderId") UUID orderId) {
-        OrderResult result = queryService.getOrder(orderId, userId);
+    public ApiResponse<OrderResponse> getOrder(@LoginUser UserContext userContext, @PathVariable("orderId") UUID orderId) {
+        OrderResult result = queryService.getOrder(orderId, userContext.userId());
         return ApiResponse.success(CommonSuccessCode.OK, OrderResponse.from(result));
     }
 
     // 주문 목록 조회
     @GetMapping
-    public ApiResponse<GetOrderSliceResponse> getOrders(@RequestHeader("X-User-Id") UUID userId,
+    public ApiResponse<GetOrderSliceResponse> getOrders(@LoginUser UserContext userContext,
                                                         @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Slice<GetOrderListResult> result = queryService.getOrders(userId, pageable);
+        Slice<GetOrderListResult> result = queryService.getOrders(userContext.userId(), pageable);
         return ApiResponse.success(CommonSuccessCode.OK, GetOrderSliceResponse.from(result));
     }
 }
