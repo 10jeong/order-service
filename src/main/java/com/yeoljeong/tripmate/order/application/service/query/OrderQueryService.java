@@ -1,6 +1,7 @@
 package com.yeoljeong.tripmate.order.application.service.query;
 
 import com.yeoljeong.tripmate.exception.BusinessException;
+import com.yeoljeong.tripmate.order.application.dto.result.OrderPlanResult;
 import com.yeoljeong.tripmate.order.application.dto.result.OrderResult;
 import com.yeoljeong.tripmate.order.application.dto.result.GetOrderListResult;
 import com.yeoljeong.tripmate.order.application.dto.result.PayableOrderResult;
@@ -45,5 +46,12 @@ public class OrderQueryService {
                 .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
 
         return PayableOrderResult.from(order);
+    }
+
+    public OrderPlanResult getOrderPlan(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
+
+        return new OrderPlanResult(order.getId(), order.getOrderItems().get(0).getPlanUnitId());
     }
 }
