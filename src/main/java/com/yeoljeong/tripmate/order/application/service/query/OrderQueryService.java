@@ -48,6 +48,7 @@ public class OrderQueryService {
         return PayableOrderResult.from(order);
     }
 
+    // 주문 일정 정보 조회
     public OrderPlanResult getOrderPlan(UUID orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
