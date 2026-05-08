@@ -8,7 +8,10 @@ import java.util.UUID;
 
 @Getter
 @Entity
-@Table(name = "order_outbox")
+@Table(name = "order_outbox",
+        indexes = {
+            @Index(name = "idx_order_outbox_status_created_at", columnList = "status, createdAt")
+        })
 public class OrderOutbox extends Outbox {
 
     @Id
