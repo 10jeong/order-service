@@ -100,7 +100,7 @@ public class OrderCommandService {
     }
 
     private void validateParticipationAvailable(String participationStatus) {
-        if (!"APPROVAL".equals(participationStatus)) {
+        if (!"APPROVED".equals(participationStatus)) {
             throw new BusinessException(OrderErrorCode.PLAN_PARTICIPATION_NOT_AVAILABLE);
         }
     }
