@@ -74,6 +74,7 @@ public class OrderCommandService {
         OrderCreatedEvent event = new OrderCreatedEvent(
                 UUID.randomUUID(),
                 savedOrder.getUserId(),
+                savedOrder.getId(),
                 savedOrder.getOrderItems().get(0).getPlanUnitId(),
                 savedOrder.getOrderItems().get(0).getProductInfo().getProductId(),
                 savedOrder.getOrderItems().get(0).getProductInfo().getScheduleId(),
