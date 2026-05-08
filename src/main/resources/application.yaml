@@ -18,3 +18,6 @@ eureka:
   instance:
     instance-id:
       ${spring.cloud.client.hostname}:${spring.application.instance_id:${random.value}}
+
+jwt:
+  internal-secret: ${JWT_INTERNAL_SECRET}
