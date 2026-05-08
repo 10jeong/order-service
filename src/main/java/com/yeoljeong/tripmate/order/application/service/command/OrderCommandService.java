@@ -1,6 +1,7 @@
 package com.yeoljeong.tripmate.order.application.service.command;
 
 import com.yeoljeong.tripmate.event.OrderCreatedEvent;
+import com.yeoljeong.tripmate.event.enums.OrderTopic;
 import com.yeoljeong.tripmate.exception.BusinessException;
 import com.yeoljeong.tripmate.order.application.client.PlanClient;
 import com.yeoljeong.tripmate.order.application.client.ProductClient;
@@ -8,6 +9,7 @@ import com.yeoljeong.tripmate.order.application.dto.command.ApprovalUserCommand;
 import com.yeoljeong.tripmate.order.application.dto.command.CreateOrderCommand;
 import com.yeoljeong.tripmate.order.application.dto.command.OrderableProductCommand;
 import com.yeoljeong.tripmate.order.application.dto.result.OrderResult;
+import com.yeoljeong.tripmate.order.application.port.OrderOutboxRecorder;
 import com.yeoljeong.tripmate.order.domain.exception.OrderErrorCode;
 import com.yeoljeong.tripmate.order.domain.model.Order;
 import com.yeoljeong.tripmate.order.domain.repository.OrderRepository;
@@ -28,6 +30,7 @@ public class OrderCommandService {
     private final ProductClient productClient;
     private final PlanClient planClient;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final OrderOutboxRecorder orderOutboxRecorder;
 
     public OrderResult createOrder(CreateOrderCommand orderCommand) {
 
@@ -81,8 +84,8 @@ public class OrderCommandService {
                 savedOrder.getOrderItems().get(0).getQuantity()
         );
 
-        // 주문 생성 이벤트 발행
-        applicationEventPublisher.publishEvent(event);
+        // 주문 생성 이벤트 outbox에 저장
+        orderOutboxRecorder.record(OrderTopic.ORDER_CREATED_TOPIC, event);
 
         return OrderResult.from(savedOrder);
     }
