@@ -21,30 +21,28 @@ public class OrderOutboxDispatcher {
     private final OrderOutboxRepository orderOutboxRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
+    @Transactional
     @Scheduled(fixedDelay = 1000)
     public void dispatch() {
         List<OrderOutbox> pendingEvents = orderOutboxRepository.findTop100ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING);
 
-        pendingEvents.forEach(this::dispatchOne);
-    }
+        pendingEvents.forEach(outbox -> {
+            try {
+                kafkaTemplate.send(outbox.getTopic(), outbox.getPayload()).get(5, TimeUnit.SECONDS);
+                outbox.published();
+            } catch (InterruptedException e) {
+                // 예외가 발생하며 유실된 인터럽트 상태 복구
+                Thread.currentThread().interrupt();
+                log.error("OrderOutbox 발행 인터럽트 - outboxId={}, topic={}, retryCount={}",
+                        outbox.getId(), outbox.getTopic(), outbox.getRetryCount(), e);
 
-    @Transactional
-    protected void dispatchOne(OrderOutbox outbox) {
-        try {
-            kafkaTemplate.send(outbox.getTopic(), outbox.getPayload()).get(5, TimeUnit.SECONDS);
-            outbox.published();
-        } catch (InterruptedException e) {
-            // 예외가 발생하며 유실된 인터럽트 상태 복구
-            Thread.currentThread().interrupt();
-            log.error("OrderOutbox 발행 인터럽트 - outboxId={}, topic={}, retryCount={}",
-                    outbox.getId(), outbox.getTopic(), outbox.getRetryCount(), e);
+                outbox.fail();
+            } catch (ExecutionException | TimeoutException e) {
+                log.error("OrderOutbox 발행 실패 - outboxId={}, topic={}, retryCount={}",
+                        outbox.getId(), outbox.getTopic(), outbox.getRetryCount(), e);
 
-            outbox.fail();
-        } catch (ExecutionException | TimeoutException e) {
-            log.error("OrderOutbox 발행 실패 - outboxId={}, topic={}, retryCount={}",
-                    outbox.getId(), outbox.getTopic(), outbox.getRetryCount(), e);
-
-            outbox.fail();
-        }
+                outbox.fail();
+            }
+        });
     }
 }
