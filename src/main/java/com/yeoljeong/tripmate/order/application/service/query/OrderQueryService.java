@@ -53,6 +53,10 @@ public class OrderQueryService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
 
+        if (order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
+            throw new BusinessException(OrderErrorCode.ORDER_ITEM_NOT_FOUND);
+        }
+
         return new OrderPlanResult(order.getId(), order.getOrderItems().get(0).getPlanUnitId());
     }
 }
