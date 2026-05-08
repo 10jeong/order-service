@@ -19,21 +19,22 @@ public class OrderOutboxDispatcher {
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Scheduled(fixedDelay = 1000)
-    @Transactional
     public void dispatch() {
         List<OrderOutbox> pendingEvents = orderOutboxRepository.findTop100ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING);
 
-        pendingEvents.forEach(outbox -> {
-            try {
-                // 메시지 발행 결과를 기다려 메시지 유실을 방지함
-                kafkaTemplate.send(outbox.getTopic(), outbox.getPayload()).get();
-                outbox.published();
-            } catch (Exception e) {
-                log.error("OrderOutbox 발행 실패 - outboxId={}, topic={}, retryCount={}",
-                        outbox.getId(), outbox.getTopic(), outbox.getRetryCount(), e);
+        pendingEvents.forEach(this::dispatchOne);
+    }
 
-                outbox.fail();
-            }
-        });
+    @Transactional
+    protected void dispatchOne(OrderOutbox outbox) {
+        try {
+            kafkaTemplate.send(outbox.getTopic(), outbox.getPayload()).get();
+            outbox.published();
+        } catch (Exception e) {
+            log.error("OrderOutbox 발행 실패 - outboxId={}, topic={}, retryCount={}",
+                    outbox.getId(), outbox.getTopic(), outbox.getRetryCount(), e);
+
+            outbox.fail();
+        }
     }
 }
