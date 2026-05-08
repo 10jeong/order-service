@@ -29,7 +29,6 @@ public class OrderCommandService {
     private final OrderRepository orderRepository;
     private final ProductClient productClient;
     private final PlanClient planClient;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final OrderOutboxRecorder orderOutboxRecorder;
 
     public OrderResult createOrder(CreateOrderCommand orderCommand) {
