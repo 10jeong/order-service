@@ -163,4 +163,6 @@ public class Order extends BaseAuditEntity {
     public boolean isCompleted() {
         return this.orderStatus == OrderStatus.COMPLETED;
     }
+
+    public boolean isCancelled() { return this.orderStatus == OrderStatus.CANCELLED; }
 }

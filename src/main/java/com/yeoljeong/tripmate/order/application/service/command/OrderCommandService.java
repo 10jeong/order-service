@@ -107,6 +107,10 @@ public class OrderCommandService {
         Order order = orderRepository.findByUserIdAndPlanUnitId(userId, planUnitId)
                 .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
 
+        if (order.isCancelled()) {
+            return;
+        }
+
         // TODO: 이벤트 객체에 취소 사유 추가 후 하드코딩 변경
         order.cancel(LocalDateTime.now(), "단순 변심");
 
@@ -129,6 +133,10 @@ public class OrderCommandService {
     public void cancelOrderByPlanUnitParticipantRollback(UUID orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
+
+        if (order.isCancelled()) {
+            return;
+        }
 
         // TODO: 이벤트 객체에 취소 사유 추가 후 하드코딩 변경
         order.cancel(LocalDateTime.now(), "단순 변심");
