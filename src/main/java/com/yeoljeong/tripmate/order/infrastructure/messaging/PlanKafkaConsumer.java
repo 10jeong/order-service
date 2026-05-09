@@ -4,7 +4,9 @@ import com.yeoljeong.tripmate.event.PlanUnitAddParticipantFailedEvent;
 import com.yeoljeong.tripmate.event.PlanUnitDeductParticipantEvent;
 import com.yeoljeong.tripmate.event.PlanUnitParticipantQuitEvent;
 import com.yeoljeong.tripmate.event.enums.PlanTopic;
+import com.yeoljeong.tripmate.exception.BusinessException;
 import com.yeoljeong.tripmate.order.application.service.command.OrderCommandService;
+import com.yeoljeong.tripmate.order.domain.exception.OrderErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -33,6 +35,17 @@ public class PlanKafkaConsumer {
             acknowledgment.acknowledge();
 
             log.info("[Order] plan.unit.participant.quit 이벤트 처리 성공: userId={}, planUnitId={}", event.userId(), event.planUnitId());
+        } catch (BusinessException e) {
+            if (isNonRetryable(e)) {
+                log.warn("[Order] plan.unit.participant.quit 이벤트 처리 스킵: userId={}, planUnitId={}", event.userId(), event.planUnitId(), e);
+
+                acknowledgment.acknowledge();
+                return;
+            }
+
+            log.error("[Order] plan.unit.participant.quit 이벤트 처리 실패, 재시도 예정: userId={}, planUnitId={}, error={}",
+                    event.userId(), event.planUnitId(), e.getMessage(), e);
+            throw e;
         } catch (Exception e) {
             log.error("[Order] plan.unit.participant.quit 이벤트 처리 실패, 재시도 예정: userId={}, planUnitId={}, error={}",
                     event.userId(), event.planUnitId(), e.getMessage(), e);
@@ -70,10 +83,28 @@ public class PlanKafkaConsumer {
         try {
             commandService.cancelOrderByPlanUnitParticipantRollback(orderId);
             acknowledgment.acknowledge();
+        } catch (BusinessException e) {
+            if (isNonRetryable(e)) {
+                log.warn("[Order] PlanUnit 참여자 보상 트랜잭션 이벤트 처리 스킵: orderId={}, ", orderId, e);
+
+                acknowledgment.acknowledge();
+                return;
+            }
+
+            log.error("[Order] PlanUnit 참여자 보상 트랜잭션 이벤트 처리 실패, 재시도 예정: orderId={}, error={}",
+                    orderId, e.getMessage(), e);
+            throw e;
         } catch (Exception e) {
             log.error("[Order] PlanUnit 참여자 보상 트랜잭션 이벤트 처리 실패, 재시도 예정: orderId={}, error={}",
                     orderId, e.getMessage(), e);
             throw e;
         }
+    }
+
+    private boolean isNonRetryable(BusinessException e) {
+        return e.getErrorCode() == OrderErrorCode.ORDER_NOT_FOUND
+                || e.getErrorCode() == OrderErrorCode.INVALID_ORDER_STATUS
+                || e.getErrorCode() == OrderErrorCode.INVALID_CANCELLED_AT
+                || e.getErrorCode() == OrderErrorCode.INVALID_CANCEL_REASON;
     }
 }
