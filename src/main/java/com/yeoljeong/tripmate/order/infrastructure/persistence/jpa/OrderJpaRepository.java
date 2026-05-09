@@ -12,4 +12,5 @@ public interface OrderJpaRepository extends JpaRepository<Order, UUID> {
     boolean existsByUserIdAndOrderItems_PlanUnitId(UUID userId, UUID planUnitId);
     Optional<Order> findByIdAndUserId(UUID orderId, UUID userId);
     Slice<Order> findAllByUserId(UUID userId, Pageable pageable);
+    Optional<Order> findByUserIdAndOrderItems_PlanUnitId(UUID userId, UUID planUnitId);
 }

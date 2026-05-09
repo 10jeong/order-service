@@ -21,5 +21,8 @@ public interface OrderRepository {
     // 주문 단건 조회
     Optional<Order> findById(UUID orderId);
 
+    // userId와 planUnitId로 주문 단건 조회
+    Optional<Order> findByUserIdAndPlanUnitId(UUID userId, UUID planUnitId);
+
     Order save(Order order);
 }

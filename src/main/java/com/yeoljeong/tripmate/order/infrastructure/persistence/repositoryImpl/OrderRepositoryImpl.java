@@ -38,6 +38,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public Optional<Order> findByUserIdAndPlanUnitId(UUID userId, UUID planUnitId) {
+        return orderJpaRepository.findByUserIdAndOrderItems_PlanUnitId(userId, planUnitId);
+    }
+
+    @Override
     public Order save(Order order) {
         return orderJpaRepository.save(order);
     }
