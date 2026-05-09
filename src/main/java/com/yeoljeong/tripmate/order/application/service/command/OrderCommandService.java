@@ -1,5 +1,6 @@
 package com.yeoljeong.tripmate.order.application.service.command;
 
+import com.yeoljeong.tripmate.event.OrderCancelledEvent;
 import com.yeoljeong.tripmate.event.OrderCreatedEvent;
 import com.yeoljeong.tripmate.event.enums.OrderTopic;
 import com.yeoljeong.tripmate.exception.BusinessException;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -98,6 +100,46 @@ public class OrderCommandService {
         }
 
         order.complete();
+    }
+
+    // 일정 탈퇴 이벤트 수신 후 동작
+    public void cancelOrderByParticipantQuit(UUID userId, UUID planUnitId) {
+        Order order = orderRepository.findByUserIdAndPlanUnitId(userId, planUnitId)
+                .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
+
+        if (order.isCancelled()) {
+            return;
+        }
+
+        // TODO: 이벤트 객체에 취소 사유 추가 후 하드코딩 변경
+        order.cancel(LocalDateTime.now(), "단순 변심");
+
+        OrderCancelledEvent event = new OrderCancelledEvent(
+                UUID.randomUUID(),
+                order.getId(),
+                order.getUserId(),
+                order.getOrderItems().get(0).getPlanUnitId(),
+                order.getOrderItems().get(0).getProductInfo().getProductId(),
+                order.getOrderItems().get(0).getProductInfo().getProductName(),
+                order.getOrderItems().get(0).getProductInfo().getScheduleId(),
+                order.getOrderItems().get(0).getQuantity()
+        );
+
+        // 주문 취소 이벤트 outbox에 저장
+        orderOutboxRecorder.record(OrderTopic.ORDER_CANCELLED_TOPIC, event);
+    }
+
+    // 인원 증가 실패 이벤트 수신 후 동작
+    public void cancelOrderByPlanUnitParticipantRollback(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
+
+        if (order.isCancelled()) {
+            return;
+        }
+
+        // TODO: 이벤트 객체에 취소 사유 추가 후 하드코딩 변경
+        order.cancel(LocalDateTime.now(), "단순 변심");
     }
 
     private void validateParticipationAvailable(String participationStatus) {
