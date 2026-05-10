@@ -123,7 +123,7 @@ public class OrderCommandService {
                 order.getId(),
                 order.getUserId(),
                 order.getOrderItems().get(0).getPlanUnitId(),
-                String.valueOf(reason),
+                reason.getDescription(),
                 order.getOrderItems().get(0).getProductInfo().getProductId(),
                 order.getOrderItems().get(0).getProductInfo().getProductName(),
                 order.getOrderItems().get(0).getProductInfo().getScheduleId(),
