@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,6 +48,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public boolean existsByUserIdAndOrderStatus(UUID userId, OrderStatus orderStatus) {
         return orderJpaRepository.existsByUserIdAndOrderStatus(userId, orderStatus);
+    }
+
+    @Override
+    public List<Order> findAllByOrderStatusAndCreatedAtBefore(OrderStatus orderStatus, LocalDateTime timeoutThreshold) {
+        return orderJpaRepository.findAllByOrderStatusAndCreatedAtBefore(orderStatus, timeoutThreshold);
     }
 
     @Override

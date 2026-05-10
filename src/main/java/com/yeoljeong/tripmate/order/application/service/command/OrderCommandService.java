@@ -12,6 +12,7 @@ import com.yeoljeong.tripmate.order.application.dto.command.OrderableProductComm
 import com.yeoljeong.tripmate.order.application.dto.result.OrderResult;
 import com.yeoljeong.tripmate.order.application.port.OrderOutboxRecorder;
 import com.yeoljeong.tripmate.order.domain.enums.OrderCancelReason;
+import com.yeoljeong.tripmate.order.domain.enums.OrderStatus;
 import com.yeoljeong.tripmate.order.domain.exception.OrderErrorCode;
 import com.yeoljeong.tripmate.order.domain.model.Order;
 import com.yeoljeong.tripmate.order.domain.repository.OrderRepository;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -32,6 +34,8 @@ public class OrderCommandService {
     private final ProductClient productClient;
     private final PlanClient planClient;
     private final OrderOutboxRecorder orderOutboxRecorder;
+
+    private static final long PAYMENT_TIMEOUT_MINUTES = 15;
 
     public OrderResult createOrder(CreateOrderCommand orderCommand) {
 
@@ -140,6 +144,18 @@ public class OrderCommandService {
         }
 
         order.cancel(LocalDateTime.now(), reason);
+    }
+
+    // 주문 취소 15분 후 스케줄러 작동 로직
+    public void cancelTimeoutOrders() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime timeoutThreshold = now.minusMinutes(PAYMENT_TIMEOUT_MINUTES);
+
+        List<Order> timeoutOrders = orderRepository.findAllByOrderStatusAndCreatedAtBefore(OrderStatus.CREATED, timeoutThreshold);
+
+        for (Order order : timeoutOrders) {
+            order.cancelByTimeout(now);
+        }
     }
 
     private void validateParticipationAvailable(String participationStatus) {

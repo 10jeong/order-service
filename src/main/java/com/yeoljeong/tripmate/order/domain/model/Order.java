@@ -115,7 +115,7 @@ public class Order extends BaseAuditEntity {
         this.cancelReason = cancelReason;
     }
 
-    public void cancelByPaymentTimeout(LocalDateTime cancelledAt) {
+    public void cancelByTimeout(LocalDateTime cancelledAt) {
         cancel(cancelledAt, OrderCancelReason.PAYMENT_TIMEOUT);
     }
 
