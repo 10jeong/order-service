@@ -115,6 +115,10 @@ public class Order extends BaseAuditEntity {
         this.cancelReason = cancelReason;
     }
 
+    public void cancelByPaymentTimeout(LocalDateTime cancelledAt) {
+        cancel(cancelledAt, OrderCancelReason.PAYMENT_TIMEOUT);
+    }
+
     public void delete(UUID userId) {
         super.softDelete();
         this.orderItems.forEach(orderItem -> orderItem.delete(userId));

@@ -104,7 +104,7 @@ public class OrderCommandService {
     }
 
     // 일정 탈퇴 이벤트 수신 후 동작
-    public void cancelOrderByParticipantQuit(UUID userId, UUID planUnitId, String reason) {
+    public void cancelOrderByParticipantQuit(UUID userId, UUID planUnitId, OrderCancelReason reason) {
         Order order = orderRepository.findByUserIdAndPlanUnitId(userId, planUnitId)
                 .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
 
@@ -112,14 +112,14 @@ public class OrderCommandService {
             return;
         }
 
-        order.cancel(LocalDateTime.now(), OrderCancelReason.from(reason));
+        order.cancel(LocalDateTime.now(), reason);
 
         OrderCancelledEvent event = new OrderCancelledEvent(
                 UUID.randomUUID(),
                 order.getId(),
                 order.getUserId(),
                 order.getOrderItems().get(0).getPlanUnitId(),
-                reason,
+                String.valueOf(reason),
                 order.getOrderItems().get(0).getProductInfo().getProductId(),
                 order.getOrderItems().get(0).getProductInfo().getProductName(),
                 order.getOrderItems().get(0).getProductInfo().getScheduleId(),
@@ -131,7 +131,7 @@ public class OrderCommandService {
     }
 
     // 인원 증가 실패 / 인원 감소 이벤트 수신 후 동작
-    public void cancelOrderByPlanUnitParticipantRollback(UUID orderId, String reason) {
+    public void cancelOrderByPlanUnitParticipantRollback(UUID orderId, OrderCancelReason reason) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
 
@@ -139,7 +139,7 @@ public class OrderCommandService {
             return;
         }
 
-        order.cancel(LocalDateTime.now(), OrderCancelReason.from(reason));
+        order.cancel(LocalDateTime.now(), reason);
     }
 
     private void validateParticipationAvailable(String participationStatus) {
