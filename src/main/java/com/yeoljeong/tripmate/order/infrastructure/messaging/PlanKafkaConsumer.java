@@ -30,8 +30,10 @@ public class PlanKafkaConsumer {
     public void consumePlanUnitParticipantQuit(PlanUnitParticipantQuitEvent event, Acknowledgment acknowledgment) {
         log.info("[Order] plan.unit.participant.quit 이벤트 수신: planUnitId={}", event.planUnitId());
 
+        String reason = (event.reason() == null || event.reason().isBlank()) ? "일정 탈퇴" : event.reason();
+
         try {
-            commandService.cancelOrderByParticipantQuit(event.userId(), event.planUnitId());
+            commandService.cancelOrderByParticipantQuit(event.userId(), event.planUnitId(), reason);
             acknowledgment.acknowledge();
 
             log.info("[Order] plan.unit.participant.quit 이벤트 처리 성공: userId={}, planUnitId={}", event.userId(), event.planUnitId());
@@ -61,7 +63,7 @@ public class PlanKafkaConsumer {
     public void consumePlanUnitAddParticipantFailed(PlanUnitAddParticipantFailedEvent event, Acknowledgment acknowledgment) {
         log.info("[Order] plan.unit.participant.add.failed 이벤트 수신: orderId={}", event.orderId());
 
-        handleParticipantDeductOrAddFailed(event.orderId(), acknowledgment);
+        handleParticipantDeductOrAddFailed(event.orderId(), "일정 인원 초과", acknowledgment);
 
         log.info("[Order] plan.unit.participant.add.failed 이벤트 처리 성공: orderId={}", event.orderId());
     }
@@ -74,14 +76,14 @@ public class PlanKafkaConsumer {
     public void consumePlanUnitDeductParticipant(PlanUnitDeductParticipantEvent event, Acknowledgment acknowledgment) {
         log.info("[Order] plan.unit.participant.deducted 이벤트 수신: orderId={}", event.orderId());
 
-        handleParticipantDeductOrAddFailed(event.orderId(), acknowledgment);
+        handleParticipantDeductOrAddFailed(event.orderId(), "상품 재고 부족", acknowledgment);
 
         log.info("[Order] plan.unit.participant.deducted 이벤트 처리 성공: orderId={}", event.orderId());
     }
 
-    private void handleParticipantDeductOrAddFailed(UUID orderId, Acknowledgment acknowledgment) {
+    private void handleParticipantDeductOrAddFailed(UUID orderId, String reason, Acknowledgment acknowledgment) {
         try {
-            commandService.cancelOrderByPlanUnitParticipantRollback(orderId);
+            commandService.cancelOrderByPlanUnitParticipantRollback(orderId, reason);
             acknowledgment.acknowledge();
         } catch (BusinessException e) {
             if (isNonRetryable(e)) {
