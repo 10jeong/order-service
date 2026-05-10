@@ -61,7 +61,7 @@ public class PlanKafkaConsumer {
     public void consumePlanUnitAddParticipantFailed(PlanUnitAddParticipantFailedEvent event, Acknowledgment acknowledgment) {
         log.info("[Order] plan.unit.participant.add.failed 이벤트 수신: orderId={}", event.orderId());
 
-        handleParticipantDeductOrAddFailed(event.orderId(), acknowledgment);
+        handleParticipantDeductOrAddFailed(event.orderId(), "일정 인원 초과", acknowledgment);
 
         log.info("[Order] plan.unit.participant.add.failed 이벤트 처리 성공: orderId={}", event.orderId());
     }
@@ -74,14 +74,14 @@ public class PlanKafkaConsumer {
     public void consumePlanUnitDeductParticipant(PlanUnitDeductParticipantEvent event, Acknowledgment acknowledgment) {
         log.info("[Order] plan.unit.participant.deducted 이벤트 수신: orderId={}", event.orderId());
 
-        handleParticipantDeductOrAddFailed(event.orderId(), acknowledgment);
+        handleParticipantDeductOrAddFailed(event.orderId(), "상품 재고 부족", acknowledgment);
 
         log.info("[Order] plan.unit.participant.deducted 이벤트 처리 성공: orderId={}", event.orderId());
     }
 
-    private void handleParticipantDeductOrAddFailed(UUID orderId, Acknowledgment acknowledgment) {
+    private void handleParticipantDeductOrAddFailed(UUID orderId, String reason, Acknowledgment acknowledgment) {
         try {
-            commandService.cancelOrderByPlanUnitParticipantRollback(orderId);
+            commandService.cancelOrderByPlanUnitParticipantRollback(orderId, reason);
             acknowledgment.acknowledge();
         } catch (BusinessException e) {
             if (isNonRetryable(e)) {
