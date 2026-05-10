@@ -103,7 +103,7 @@ public class OrderCommandService {
     }
 
     // 일정 탈퇴 이벤트 수신 후 동작
-    public void cancelOrderByParticipantQuit(UUID userId, UUID planUnitId) {
+    public void cancelOrderByParticipantQuit(UUID userId, UUID planUnitId, String reason) {
         Order order = orderRepository.findByUserIdAndPlanUnitId(userId, planUnitId)
                 .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
 
@@ -111,14 +111,14 @@ public class OrderCommandService {
             return;
         }
 
-        // TODO: 이벤트 객체에 취소 사유 추가 후 하드코딩 변경
-        order.cancel(LocalDateTime.now(), "단순 변심");
+        order.cancel(LocalDateTime.now(), reason);
 
         OrderCancelledEvent event = new OrderCancelledEvent(
                 UUID.randomUUID(),
                 order.getId(),
                 order.getUserId(),
                 order.getOrderItems().get(0).getPlanUnitId(),
+                reason,
                 order.getOrderItems().get(0).getProductInfo().getProductId(),
                 order.getOrderItems().get(0).getProductInfo().getProductName(),
                 order.getOrderItems().get(0).getProductInfo().getScheduleId(),
