@@ -11,6 +11,7 @@ import com.yeoljeong.tripmate.order.application.dto.command.CreateOrderCommand;
 import com.yeoljeong.tripmate.order.application.dto.command.OrderableProductCommand;
 import com.yeoljeong.tripmate.order.application.dto.result.OrderResult;
 import com.yeoljeong.tripmate.order.application.port.OrderOutboxRecorder;
+import com.yeoljeong.tripmate.order.domain.enums.OrderCancelReason;
 import com.yeoljeong.tripmate.order.domain.exception.OrderErrorCode;
 import com.yeoljeong.tripmate.order.domain.model.Order;
 import com.yeoljeong.tripmate.order.domain.repository.OrderRepository;
@@ -111,7 +112,7 @@ public class OrderCommandService {
             return;
         }
 
-        order.cancel(LocalDateTime.now(), reason);
+        order.cancel(LocalDateTime.now(), OrderCancelReason.from(reason));
 
         OrderCancelledEvent event = new OrderCancelledEvent(
                 UUID.randomUUID(),
@@ -138,7 +139,7 @@ public class OrderCommandService {
             return;
         }
 
-        order.cancel(LocalDateTime.now(), reason);
+        order.cancel(LocalDateTime.now(), OrderCancelReason.from(reason));
     }
 
     private void validateParticipationAvailable(String participationStatus) {
