@@ -30,8 +30,10 @@ public class PlanKafkaConsumer {
     public void consumePlanUnitParticipantQuit(PlanUnitParticipantQuitEvent event, Acknowledgment acknowledgment) {
         log.info("[Order] plan.unit.participant.quit 이벤트 수신: planUnitId={}", event.planUnitId());
 
+        String reason = (event.reason() == null || event.reason().isBlank()) ? "일정 탈퇴" : event.reason();
+
         try {
-            commandService.cancelOrderByParticipantQuit(event.userId(), event.planUnitId(), event.reason());
+            commandService.cancelOrderByParticipantQuit(event.userId(), event.planUnitId(), reason);
             acknowledgment.acknowledge();
 
             log.info("[Order] plan.unit.participant.quit 이벤트 처리 성공: userId={}, planUnitId={}", event.userId(), event.planUnitId());
