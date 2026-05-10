@@ -1,5 +1,6 @@
 package com.yeoljeong.tripmate.order.domain.repository;
 
+import com.yeoljeong.tripmate.order.domain.enums.OrderStatus;
 import com.yeoljeong.tripmate.order.domain.model.Order;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -23,6 +24,9 @@ public interface OrderRepository {
 
     // userId와 planUnitId로 주문 단건 조회
     Optional<Order> findByUserIdAndPlanUnitId(UUID userId, UUID planUnitId);
+
+    // userId와 orderStatus로 주문 조회
+    boolean existsByUserIdAndOrderStatus(UUID userId, OrderStatus orderStatus);
 
     Order save(Order order);
 }

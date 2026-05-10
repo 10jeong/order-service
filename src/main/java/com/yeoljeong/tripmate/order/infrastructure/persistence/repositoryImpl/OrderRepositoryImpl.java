@@ -1,5 +1,6 @@
 package com.yeoljeong.tripmate.order.infrastructure.persistence.repositoryImpl;
 
+import com.yeoljeong.tripmate.order.domain.enums.OrderStatus;
 import com.yeoljeong.tripmate.order.domain.model.Order;
 import com.yeoljeong.tripmate.order.domain.repository.OrderRepository;
 import com.yeoljeong.tripmate.order.infrastructure.persistence.jpa.OrderJpaRepository;
@@ -40,6 +41,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public Optional<Order> findByUserIdAndPlanUnitId(UUID userId, UUID planUnitId) {
         return orderJpaRepository.findByUserIdAndOrderItems_PlanUnitId(userId, planUnitId);
+    }
+
+    @Override
+    public boolean existsByUserIdAndOrderStatus(UUID userId, OrderStatus orderStatus) {
+        return orderJpaRepository.existsByUserIdAndOrderStatus(userId, orderStatus);
     }
 
     @Override

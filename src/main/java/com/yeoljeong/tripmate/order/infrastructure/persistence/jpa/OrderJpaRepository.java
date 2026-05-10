@@ -1,5 +1,6 @@
 package com.yeoljeong.tripmate.order.infrastructure.persistence.jpa;
 
+import com.yeoljeong.tripmate.order.domain.enums.OrderStatus;
 import com.yeoljeong.tripmate.order.domain.model.Order;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -13,4 +14,5 @@ public interface OrderJpaRepository extends JpaRepository<Order, UUID> {
     Optional<Order> findByIdAndUserId(UUID orderId, UUID userId);
     Slice<Order> findAllByUserId(UUID userId, Pageable pageable);
     Optional<Order> findByUserIdAndOrderItems_PlanUnitId(UUID userId, UUID planUnitId);
+    boolean existsByUserIdAndOrderStatus(UUID userId, OrderStatus orderStatus);
 }
