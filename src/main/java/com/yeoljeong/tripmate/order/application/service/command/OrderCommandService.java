@@ -4,11 +4,13 @@ import com.yeoljeong.tripmate.event.OrderCancelledEvent;
 import com.yeoljeong.tripmate.event.OrderCreatedEvent;
 import com.yeoljeong.tripmate.event.enums.OrderTopic;
 import com.yeoljeong.tripmate.exception.BusinessException;
+import com.yeoljeong.tripmate.order.application.client.PaymentClient;
 import com.yeoljeong.tripmate.order.application.client.PlanClient;
 import com.yeoljeong.tripmate.order.application.client.ProductClient;
 import com.yeoljeong.tripmate.order.application.dto.command.ApprovalUserCommand;
 import com.yeoljeong.tripmate.order.application.dto.command.CreateOrderCommand;
 import com.yeoljeong.tripmate.order.application.dto.command.OrderableProductCommand;
+import com.yeoljeong.tripmate.order.application.dto.result.DeletableOrderResult;
 import com.yeoljeong.tripmate.order.application.dto.result.OrderResult;
 import com.yeoljeong.tripmate.order.application.port.OrderOutboxRecorder;
 import com.yeoljeong.tripmate.order.domain.enums.OrderCancelReason;
@@ -33,6 +35,7 @@ public class OrderCommandService {
     private final OrderRepository orderRepository;
     private final ProductClient productClient;
     private final PlanClient planClient;
+    private final PaymentClient paymentClient;
     private final OrderOutboxRecorder orderOutboxRecorder;
 
     private static final long PAYMENT_TIMEOUT_MINUTES = 15;
@@ -154,7 +157,11 @@ public class OrderCommandService {
         List<Order> timeoutOrders = orderRepository.findAllByOrderStatusAndCreatedAtBefore(OrderStatus.CREATED, timeoutThreshold);
 
         for (Order order : timeoutOrders) {
-            order.cancelByTimeout(now);
+            DeletableOrderResult payment = paymentClient.getDeletablePayment(order.getId());
+
+            if (!payment.exists()) {
+                order.cancel(now, OrderCancelReason.PAYMENT_TIMEOUT);
+            }
         }
     }
 
