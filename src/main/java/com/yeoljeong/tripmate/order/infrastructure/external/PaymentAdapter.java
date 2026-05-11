@@ -23,7 +23,7 @@ public class PaymentAdapter implements PaymentClient {
             DeletableOrderResponse deletableOrderResponse = paymentFeignClient.getDeletablePayment(orderId);
 
             if (deletableOrderResponse == null) {
-                throw new BusinessException(OrderErrorCode.PAYMENT_NOT_FOUND);
+                throw new BusinessException(OrderErrorCode.PAYMENT_SERVICE_ERROR);
             }
 
             return new DeletableOrderResult(deletableOrderResponse.exists(), deletableOrderResponse.paymentStatus());
