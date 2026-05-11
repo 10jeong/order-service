@@ -28,7 +28,7 @@ public record OrderResult(
                         .map(OrderItemResult::from)
                         .toList())
                 .cancelledAt(order.getCancelledAt())
-                .cancelReason(String.valueOf(order.getCancelReason()))
+                .cancelReason(order.getCancelReason() != null ? order.getCancelReason().getDescription() : null)
                 .build();
     }
 
