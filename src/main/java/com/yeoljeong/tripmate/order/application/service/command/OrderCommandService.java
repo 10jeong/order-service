@@ -19,6 +19,7 @@ import com.yeoljeong.tripmate.order.domain.exception.OrderErrorCode;
 import com.yeoljeong.tripmate.order.domain.model.Order;
 import com.yeoljeong.tripmate.order.domain.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -156,11 +158,16 @@ public class OrderCommandService {
 
         List<Order> timeoutOrders = orderRepository.findAllByOrderStatusAndCreatedAtBefore(OrderStatus.CREATED, timeoutThreshold);
 
-        for (Order order : timeoutOrders) {
-            DeletableOrderResult payment = paymentClient.getDeletablePayment(order.getId());
 
-            if (!payment.exists()) {
-                order.cancel(now, OrderCancelReason.PAYMENT_TIMEOUT);
+        for (Order order : timeoutOrders) {
+            try {
+                DeletableOrderResult payment = paymentClient.getDeletablePayment(order.getId());
+
+                if (!payment.exists()) {
+                    order.cancel(now, OrderCancelReason.PAYMENT_TIMEOUT);
+                }
+            } catch (Exception e) {
+                log.warn("[Order] timeout cancel skip: orderId={}", order.getId(), e);
             }
         }
     }
