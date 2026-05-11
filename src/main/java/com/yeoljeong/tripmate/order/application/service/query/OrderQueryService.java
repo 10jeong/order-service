@@ -1,10 +1,8 @@
 package com.yeoljeong.tripmate.order.application.service.query;
 
 import com.yeoljeong.tripmate.exception.BusinessException;
-import com.yeoljeong.tripmate.order.application.dto.result.OrderPlanResult;
-import com.yeoljeong.tripmate.order.application.dto.result.OrderResult;
-import com.yeoljeong.tripmate.order.application.dto.result.GetOrderListResult;
-import com.yeoljeong.tripmate.order.application.dto.result.PayableOrderResult;
+import com.yeoljeong.tripmate.order.application.dto.result.*;
+import com.yeoljeong.tripmate.order.domain.enums.OrderStatus;
 import com.yeoljeong.tripmate.order.domain.exception.OrderErrorCode;
 import com.yeoljeong.tripmate.order.domain.model.Order;
 import com.yeoljeong.tripmate.order.domain.repository.OrderRepository;
@@ -58,5 +56,11 @@ public class OrderQueryService {
         }
 
         return new OrderPlanResult(order.getId(), order.getOrderItems().get(0).getPlanUnitId());
+    }
+
+    public WithdrawalCheckResult getWithdrawalCheck(UUID userId) {
+        boolean exists = orderRepository.existsByUserIdAndOrderStatus(userId, OrderStatus.CREATED);
+
+        return new WithdrawalCheckResult(exists);
     }
 }

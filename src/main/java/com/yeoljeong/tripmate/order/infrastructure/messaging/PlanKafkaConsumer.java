@@ -6,6 +6,7 @@ import com.yeoljeong.tripmate.event.PlanUnitParticipantQuitEvent;
 import com.yeoljeong.tripmate.event.enums.PlanTopic;
 import com.yeoljeong.tripmate.exception.BusinessException;
 import com.yeoljeong.tripmate.order.application.service.command.OrderCommandService;
+import com.yeoljeong.tripmate.order.domain.enums.OrderCancelReason;
 import com.yeoljeong.tripmate.order.domain.exception.OrderErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +31,10 @@ public class PlanKafkaConsumer {
     public void consumePlanUnitParticipantQuit(PlanUnitParticipantQuitEvent event, Acknowledgment acknowledgment) {
         log.info("[Order] plan.unit.participant.quit 이벤트 수신: planUnitId={}", event.planUnitId());
 
-        String reason = (event.reason() == null || event.reason().isBlank()) ? "일정 탈퇴" : event.reason();
-
         try {
+            OrderCancelReason reason = (event.reason() == null || event.reason().isBlank())
+                    ? OrderCancelReason.PLAN_PARTICIPANT_QUIT : OrderCancelReason.from(event.reason());
+
             commandService.cancelOrderByParticipantQuit(event.userId(), event.planUnitId(), reason);
             acknowledgment.acknowledge();
 
@@ -63,7 +65,7 @@ public class PlanKafkaConsumer {
     public void consumePlanUnitAddParticipantFailed(PlanUnitAddParticipantFailedEvent event, Acknowledgment acknowledgment) {
         log.info("[Order] plan.unit.participant.add.failed 이벤트 수신: orderId={}", event.orderId());
 
-        handleParticipantDeductOrAddFailed(event.orderId(), "일정 인원 초과", acknowledgment);
+        handleParticipantDeductOrAddFailed(event.orderId(), OrderCancelReason.PLAN_PARTICIPANT_EXCEEDED, acknowledgment);
 
         log.info("[Order] plan.unit.participant.add.failed 이벤트 처리 성공: orderId={}", event.orderId());
     }
@@ -76,12 +78,12 @@ public class PlanKafkaConsumer {
     public void consumePlanUnitDeductParticipant(PlanUnitDeductParticipantEvent event, Acknowledgment acknowledgment) {
         log.info("[Order] plan.unit.participant.deducted 이벤트 수신: orderId={}", event.orderId());
 
-        handleParticipantDeductOrAddFailed(event.orderId(), "상품 재고 부족", acknowledgment);
+        handleParticipantDeductOrAddFailed(event.orderId(), OrderCancelReason.PRODUCT_STOCK_SHORTAGE, acknowledgment);
 
         log.info("[Order] plan.unit.participant.deducted 이벤트 처리 성공: orderId={}", event.orderId());
     }
 
-    private void handleParticipantDeductOrAddFailed(UUID orderId, String reason, Acknowledgment acknowledgment) {
+    private void handleParticipantDeductOrAddFailed(UUID orderId, OrderCancelReason reason, Acknowledgment acknowledgment) {
         try {
             commandService.cancelOrderByPlanUnitParticipantRollback(orderId, reason);
             acknowledgment.acknowledge();

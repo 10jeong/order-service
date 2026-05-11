@@ -4,17 +4,24 @@ import com.yeoljeong.tripmate.event.OrderCancelledEvent;
 import com.yeoljeong.tripmate.event.OrderCreatedEvent;
 import com.yeoljeong.tripmate.event.enums.OrderTopic;
 import com.yeoljeong.tripmate.exception.BusinessException;
+import com.yeoljeong.tripmate.order.application.client.PaymentClient;
 import com.yeoljeong.tripmate.order.application.client.PlanClient;
 import com.yeoljeong.tripmate.order.application.client.ProductClient;
 import com.yeoljeong.tripmate.order.application.dto.command.ApprovalUserCommand;
 import com.yeoljeong.tripmate.order.application.dto.command.CreateOrderCommand;
 import com.yeoljeong.tripmate.order.application.dto.command.OrderableProductCommand;
+import com.yeoljeong.tripmate.order.application.dto.result.DeletableOrderResult;
 import com.yeoljeong.tripmate.order.application.dto.result.OrderResult;
 import com.yeoljeong.tripmate.order.application.port.OrderOutboxRecorder;
+import com.yeoljeong.tripmate.order.domain.enums.OrderCancelReason;
+import com.yeoljeong.tripmate.order.domain.enums.OrderStatus;
 import com.yeoljeong.tripmate.order.domain.exception.OrderErrorCode;
 import com.yeoljeong.tripmate.order.domain.model.Order;
 import com.yeoljeong.tripmate.order.domain.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -30,7 +38,10 @@ public class OrderCommandService {
     private final OrderRepository orderRepository;
     private final ProductClient productClient;
     private final PlanClient planClient;
+    private final PaymentClient paymentClient;
     private final OrderOutboxRecorder orderOutboxRecorder;
+
+    private static final long PAYMENT_TIMEOUT_MINUTES = 15;
 
     public OrderResult createOrder(CreateOrderCommand orderCommand) {
 
@@ -103,7 +114,7 @@ public class OrderCommandService {
     }
 
     // 일정 탈퇴 이벤트 수신 후 동작
-    public void cancelOrderByParticipantQuit(UUID userId, UUID planUnitId, String reason) {
+    public void cancelOrderByParticipantQuit(UUID userId, UUID planUnitId, OrderCancelReason reason) {
         Order order = orderRepository.findByUserIdAndPlanUnitId(userId, planUnitId)
                 .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
 
@@ -118,7 +129,7 @@ public class OrderCommandService {
                 order.getId(),
                 order.getUserId(),
                 order.getOrderItems().get(0).getPlanUnitId(),
-                reason,
+                reason.getDescription(),
                 order.getOrderItems().get(0).getProductInfo().getProductId(),
                 order.getOrderItems().get(0).getProductInfo().getProductName(),
                 order.getOrderItems().get(0).getProductInfo().getScheduleId(),
@@ -130,7 +141,7 @@ public class OrderCommandService {
     }
 
     // 인원 증가 실패 / 인원 감소 이벤트 수신 후 동작
-    public void cancelOrderByPlanUnitParticipantRollback(UUID orderId, String reason) {
+    public void cancelOrderByPlanUnitParticipantRollback(UUID orderId, OrderCancelReason reason) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
 
@@ -139,6 +150,26 @@ public class OrderCommandService {
         }
 
         order.cancel(LocalDateTime.now(), reason);
+    }
+
+    // 주문 취소 15분 후 스케줄러 작동 로직
+    public void cancelTimeoutOrders(int batchSize) {
+        LocalDateTime timeoutThreshold = LocalDateTime.now().minusMinutes(PAYMENT_TIMEOUT_MINUTES);
+
+        Slice<Order> timeoutOrders = orderRepository.findAllByOrderStatusAndCreatedAtBefore(
+                OrderStatus.CREATED, timeoutThreshold, PageRequest.of(0, batchSize));
+
+        for (Order order : timeoutOrders) {
+            try {
+                DeletableOrderResult payment = paymentClient.getDeletablePayment(order.getId());
+
+                if (!payment.exists()) {
+                    order.cancel(LocalDateTime.now(), OrderCancelReason.PAYMENT_TIMEOUT);
+                }
+            } catch (Exception e) {
+                log.warn("[Order] timeout cancel skip: orderId={}", order.getId(), e);
+            }
+        }
     }
 
     private void validateParticipationAvailable(String participationStatus) {

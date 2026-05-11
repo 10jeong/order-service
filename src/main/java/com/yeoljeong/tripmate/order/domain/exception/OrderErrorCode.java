@@ -37,7 +37,9 @@ public enum OrderErrorCode implements ErrorCode {
     PLAN_PARTICIPATION_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "참여되지 않은 일정의 상품은 구매할 수 없습니다."),
     OUTBOX_SERIALIZATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "아웃박스 이벤트 직렬화에 실패했습니다."),
     INVALID_TOPIC(HttpStatus.INTERNAL_SERVER_ERROR, "토픽이 유효하지 않습니다."),
-    INVALID_EVENT(HttpStatus.INTERNAL_SERVER_ERROR, "이벤트가 유효하지 않습니다.");
+    INVALID_EVENT(HttpStatus.INTERNAL_SERVER_ERROR, "이벤트가 유효하지 않습니다."),
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제 내역을 찾을 수 없습니다."),
+    PAYMENT_SERVICE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "결제 서비스 호출 에러입니다.");
 
     private final HttpStatus status;
     private final String description;

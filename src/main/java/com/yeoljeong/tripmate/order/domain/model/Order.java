@@ -2,6 +2,7 @@ package com.yeoljeong.tripmate.order.domain.model;
 
 import com.yeoljeong.tripmate.domain.BaseAuditEntity;
 import com.yeoljeong.tripmate.order.domain.enums.Country;
+import com.yeoljeong.tripmate.order.domain.enums.OrderCancelReason;
 import com.yeoljeong.tripmate.order.domain.enums.OrderStatus;
 import com.yeoljeong.tripmate.order.domain.exception.OrderErrorCode;
 import com.yeoljeong.tripmate.exception.BusinessException;
@@ -50,14 +51,15 @@ public class Order extends BaseAuditEntity {
     @Column(name = "cancelled_at")
     private LocalDateTime cancelledAt;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "cancel_reason", length = 255)
-    private String cancelReason;
+    private OrderCancelReason cancelReason;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Builder
-    private Order(UUID userId, OrderStatus orderStatus, LocalDateTime cancelledAt, String cancelReason) {
+    private Order(UUID userId, OrderStatus orderStatus, LocalDateTime cancelledAt, OrderCancelReason cancelReason) {
         this.userId = userId;
         this.orderStatus = orderStatus;
         this.cancelledAt = cancelledAt;
@@ -95,7 +97,7 @@ public class Order extends BaseAuditEntity {
     }
 
     // CREATED -> CANCELLED or COMPLETED -> CANCELLED
-    public void cancel(LocalDateTime cancelledAt, String cancelReason) {
+    public void cancel(LocalDateTime cancelledAt, OrderCancelReason cancelReason) {
         if (this.orderStatus != OrderStatus.CREATED && this.orderStatus != OrderStatus.COMPLETED) {
             throw new BusinessException(OrderErrorCode.INVALID_ORDER_STATUS);
         }
@@ -111,6 +113,10 @@ public class Order extends BaseAuditEntity {
         this.orderStatus = OrderStatus.CANCELLED;
         this.cancelledAt = cancelledAt;
         this.cancelReason = cancelReason;
+    }
+
+    public void cancelByTimeout(LocalDateTime cancelledAt) {
+        cancel(cancelledAt, OrderCancelReason.PAYMENT_TIMEOUT);
     }
 
     public void delete(UUID userId) {
