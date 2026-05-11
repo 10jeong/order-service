@@ -55,8 +55,11 @@ public class PlanKafkaConsumer {
                     payload, e.getMessage(), e);
             throw e;
         } catch (Exception e) {
-            log.error("[Order] plan.unit.participant.quit 이벤트 처리 실패, 재시도 예정: payload={}, error={}",
-                    payload, e.getMessage(), e);
+            String payloadHash = (payload == null) ? "null" : Integer.toHexString(payload.hashCode());
+            int payloadLength = (payload == null) ? 0 : payload.length();
+
+            log.error("[Order] plan.unit.participant.quit 이벤트 처리 실패, 재시도 예정: payloadHash={}, payloadLength={}, error={}",
+                    payloadHash, payloadLength, e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -77,8 +80,11 @@ public class PlanKafkaConsumer {
 
             log.info("[Order] plan.unit.participant.add.failed 이벤트 처리 성공: orderId={}", event.orderId());
         } catch (Exception e) {
-            log.error("[Order] plan.unit.participant.add.failed 이벤트 처리 실패, 재시도 예정: payload={}, error={}",
-                    payload, e.getMessage(), e);
+            String payloadHash = (payload == null) ? "null" : Integer.toHexString(payload.hashCode());
+            int payloadLength = (payload == null) ? 0 : payload.length();
+
+            log.error("[Order] plan.unit.participant.add.failed 이벤트 처리 실패, 재시도 예정: payloadHash={}, payloadLength={}, error={}",
+                    payloadHash, payloadLength, e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -99,8 +105,11 @@ public class PlanKafkaConsumer {
 
             log.info("[Order] plan.unit.participant.deducted 이벤트 처리 성공: orderId={}", event.orderId());
         } catch (Exception e) {
-            log.error("[Order] plan.unit.participant.deducted 이벤트 처리 실패, 재시도 예정: payload={}, error={}",
-                    payload, e.getMessage(), e);
+            String payloadHash = (payload == null) ? "null" : Integer.toHexString(payload.hashCode());
+            int payloadLength = (payload == null) ? 0 : payload.length();
+
+            log.error("[Order] plan.unit.participant.deducted 이벤트 처리 실패, 재시도 예정: payloadHash={}, payloadLength={}, error={}",
+                    payloadHash, payloadLength, e.getMessage(), e);
             throw new RuntimeException(e);
         }
 
