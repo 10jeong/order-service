@@ -1,6 +1,5 @@
 package com.yeoljeong.tripmate.order.infrastructure.messaging;
 
-import com.yeoljeong.tripmate.event.PaymentCompletedEvent;
 import com.yeoljeong.tripmate.event.PlanUnitAddParticipantFailedEvent;
 import com.yeoljeong.tripmate.event.PlanUnitDeductParticipantEvent;
 import com.yeoljeong.tripmate.event.PlanUnitParticipantQuitEvent;
