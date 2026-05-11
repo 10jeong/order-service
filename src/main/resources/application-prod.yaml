@@ -16,7 +16,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        default_schema: payment_db
+        default_schema: order_db
         format_sql: false
         jdbc.time_zone: Asia/Seoul
         jdbc:
@@ -30,7 +30,7 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAPS}
     consumer:
-      group-id: payment-group
+      group-id: order-group
       auto-offset-reset: latest
       enable-auto-commit: false
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
