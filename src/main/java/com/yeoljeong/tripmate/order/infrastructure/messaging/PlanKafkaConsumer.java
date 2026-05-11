@@ -1,5 +1,6 @@
 package com.yeoljeong.tripmate.order.infrastructure.messaging;
 
+import com.yeoljeong.tripmate.event.PaymentCompletedEvent;
 import com.yeoljeong.tripmate.event.PlanUnitAddParticipantFailedEvent;
 import com.yeoljeong.tripmate.event.PlanUnitDeductParticipantEvent;
 import com.yeoljeong.tripmate.event.PlanUnitParticipantQuitEvent;
@@ -22,16 +23,20 @@ import java.util.UUID;
 public class PlanKafkaConsumer {
 
     private final OrderCommandService commandService;
+    private final KafkaPayloadDeserializer payloadDeserializer;
 
     @KafkaListener(
             topics = PlanTopic.PLAN_UNIT_PARTICIPANT_QUIT_TOPIC,
             groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "kafkaListenerContainerFactory"
     )
-    public void consumePlanUnitParticipantQuit(PlanUnitParticipantQuitEvent event, Acknowledgment acknowledgment) {
-        log.info("[Order] plan.unit.participant.quit 이벤트 수신: planUnitId={}", event.planUnitId());
+    public void consumePlanUnitParticipantQuit(String payload, Acknowledgment acknowledgment) {
 
         try {
+            PlanUnitParticipantQuitEvent event = payloadDeserializer.deserialize(payload, PlanUnitParticipantQuitEvent.class);
+
+            log.info("[Order] plan.unit.participant.quit 이벤트 수신: planUnitId={}", event.planUnitId());
+
             OrderCancelReason reason = (event.reason() == null || event.reason().isBlank())
                     ? OrderCancelReason.PLAN_PARTICIPANT_QUIT : OrderCancelReason.from(event.reason());
 
@@ -41,19 +46,19 @@ public class PlanKafkaConsumer {
             log.info("[Order] plan.unit.participant.quit 이벤트 처리 성공: userId={}, planUnitId={}", event.userId(), event.planUnitId());
         } catch (BusinessException e) {
             if (isNonRetryable(e)) {
-                log.warn("[Order] plan.unit.participant.quit 이벤트 처리 스킵: userId={}, planUnitId={}", event.userId(), event.planUnitId(), e);
+                log.warn("[Order] plan.unit.participant.quit 이벤트 처리 스킵: payload={}", payload, e);
 
                 acknowledgment.acknowledge();
                 return;
             }
 
-            log.error("[Order] plan.unit.participant.quit 이벤트 처리 실패, 재시도 예정: userId={}, planUnitId={}, error={}",
-                    event.userId(), event.planUnitId(), e.getMessage(), e);
+            log.error("[Order] plan.unit.participant.quit 이벤트 처리 실패, 재시도 예정: payload={}, error={}",
+                    payload, e.getMessage(), e);
             throw e;
         } catch (Exception e) {
-            log.error("[Order] plan.unit.participant.quit 이벤트 처리 실패, 재시도 예정: userId={}, planUnitId={}, error={}",
-                    event.userId(), event.planUnitId(), e.getMessage(), e);
-            throw e;
+            log.error("[Order] plan.unit.participant.quit 이벤트 처리 실패, 재시도 예정: payload={}, error={}",
+                    payload, e.getMessage(), e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -62,12 +67,21 @@ public class PlanKafkaConsumer {
             groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "kafkaListenerContainerFactory"
     )
-    public void consumePlanUnitAddParticipantFailed(PlanUnitAddParticipantFailedEvent event, Acknowledgment acknowledgment) {
-        log.info("[Order] plan.unit.participant.add.failed 이벤트 수신: orderId={}", event.orderId());
+    public void consumePlanUnitAddParticipantFailed(String payload, Acknowledgment acknowledgment) {
 
-        handleParticipantDeductOrAddFailed(event.orderId(), OrderCancelReason.PLAN_PARTICIPANT_EXCEEDED, acknowledgment);
+        try {
+            PlanUnitAddParticipantFailedEvent event = payloadDeserializer.deserialize(payload, PlanUnitAddParticipantFailedEvent.class);
 
-        log.info("[Order] plan.unit.participant.add.failed 이벤트 처리 성공: orderId={}", event.orderId());
+            log.info("[Order] plan.unit.participant.add.failed 이벤트 수신: orderId={}", event.orderId());
+
+            handleParticipantDeductOrAddFailed(event.orderId(), OrderCancelReason.PLAN_PARTICIPANT_EXCEEDED, acknowledgment);
+
+            log.info("[Order] plan.unit.participant.add.failed 이벤트 처리 성공: orderId={}", event.orderId());
+        } catch (Exception e) {
+            log.error("[Order] plan.unit.participant.add.failed 이벤트 처리 실패, 재시도 예정: payload={}, error={}",
+                    payload, e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
     }
 
     @KafkaListener(
@@ -75,12 +89,22 @@ public class PlanKafkaConsumer {
             groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "kafkaListenerContainerFactory"
     )
-    public void consumePlanUnitDeductParticipant(PlanUnitDeductParticipantEvent event, Acknowledgment acknowledgment) {
-        log.info("[Order] plan.unit.participant.deducted 이벤트 수신: orderId={}", event.orderId());
+    public void consumePlanUnitDeductParticipant(String payload, Acknowledgment acknowledgment) {
 
-        handleParticipantDeductOrAddFailed(event.orderId(), OrderCancelReason.PRODUCT_STOCK_SHORTAGE, acknowledgment);
+        try {
+            PlanUnitDeductParticipantEvent event = payloadDeserializer.deserialize(payload, PlanUnitDeductParticipantEvent.class);
 
-        log.info("[Order] plan.unit.participant.deducted 이벤트 처리 성공: orderId={}", event.orderId());
+            log.info("[Order] plan.unit.participant.deducted 이벤트 수신: orderId={}", event.orderId());
+
+            handleParticipantDeductOrAddFailed(event.orderId(), OrderCancelReason.PRODUCT_STOCK_SHORTAGE, acknowledgment);
+
+            log.info("[Order] plan.unit.participant.deducted 이벤트 처리 성공: orderId={}", event.orderId());
+        } catch (Exception e) {
+            log.error("[Order] plan.unit.participant.deducted 이벤트 처리 실패, 재시도 예정: payload={}, error={}",
+                    payload, e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void handleParticipantDeductOrAddFailed(UUID orderId, OrderCancelReason reason, Acknowledgment acknowledgment) {
