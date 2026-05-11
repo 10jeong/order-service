@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: order-service
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
@@ -59,8 +61,10 @@ eureka:
     fetch-registry: true
   instance:
     hostname: ${EUREKA_INSTANCE_HOST_NAME}
-    non-secure-port: 80
+    non-secure-port: 8080
     prefer-ip-address: false
+    non-secure-port-enabled: true
+    secure-port-enabled: false
 
 jwt:
   secret: ${JWT_INTERNAL_SECRET}
