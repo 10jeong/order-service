@@ -11,9 +11,11 @@ public class OrderTimeoutScheduler {
 
     private final OrderCommandService commandService;
 
+    private static final int TIMEOUT_CANCEL_BATCH_SIZE = 100;
+
     // 매 분 0초마다 확인
     @Scheduled(cron = "0 * * * * *")
     public void cancelPaymentTimeoutOrders() {
-        commandService.cancelTimeoutOrders();
+        commandService.cancelTimeoutOrders(TIMEOUT_CANCEL_BATCH_SIZE);
     }
 }

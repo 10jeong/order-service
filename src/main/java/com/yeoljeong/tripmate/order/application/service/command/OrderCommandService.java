@@ -20,12 +20,13 @@ import com.yeoljeong.tripmate.order.domain.model.Order;
 import com.yeoljeong.tripmate.order.domain.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -152,19 +153,18 @@ public class OrderCommandService {
     }
 
     // 주문 취소 15분 후 스케줄러 작동 로직
-    public void cancelTimeoutOrders() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime timeoutThreshold = now.minusMinutes(PAYMENT_TIMEOUT_MINUTES);
+    public void cancelTimeoutOrders(int batchSize) {
+        LocalDateTime timeoutThreshold = LocalDateTime.now().minusMinutes(PAYMENT_TIMEOUT_MINUTES);
 
-        List<Order> timeoutOrders = orderRepository.findAllByOrderStatusAndCreatedAtBefore(OrderStatus.CREATED, timeoutThreshold);
-
+        Slice<Order> timeoutOrders = orderRepository.findAllByOrderStatusAndCreatedAtBefore(
+                OrderStatus.CREATED, timeoutThreshold, PageRequest.of(0, batchSize));
 
         for (Order order : timeoutOrders) {
             try {
                 DeletableOrderResult payment = paymentClient.getDeletablePayment(order.getId());
 
                 if (!payment.exists()) {
-                    order.cancel(now, OrderCancelReason.PAYMENT_TIMEOUT);
+                    order.cancel(LocalDateTime.now(), OrderCancelReason.PAYMENT_TIMEOUT);
                 }
             } catch (Exception e) {
                 log.warn("[Order] timeout cancel skip: orderId={}", order.getId(), e);

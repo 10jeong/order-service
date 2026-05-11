@@ -51,8 +51,8 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> findAllByOrderStatusAndCreatedAtBefore(OrderStatus orderStatus, LocalDateTime timeoutThreshold) {
-        return orderJpaRepository.findAllByOrderStatusAndCreatedAtBefore(orderStatus, timeoutThreshold);
+    public Slice<Order> findAllByOrderStatusAndCreatedAtBefore(OrderStatus orderStatus, LocalDateTime timeoutThreshold, Pageable pageable) {
+        return orderJpaRepository.findAllByOrderStatusAndCreatedAtBefore(orderStatus, timeoutThreshold, pageable);
     }
 
     @Override

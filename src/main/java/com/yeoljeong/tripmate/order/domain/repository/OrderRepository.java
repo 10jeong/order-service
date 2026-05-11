@@ -31,7 +31,7 @@ public interface OrderRepository {
     boolean existsByUserIdAndOrderStatus(UUID userId, OrderStatus orderStatus);
 
     // orderStatus와 createdAt 기반 임계값(15분)으로 주문 리스트 조회
-    List<Order> findAllByOrderStatusAndCreatedAtBefore(OrderStatus orderStatus, LocalDateTime timeoutThreshold);
+    Slice<Order> findAllByOrderStatusAndCreatedAtBefore(OrderStatus orderStatus, LocalDateTime timeoutThreshold, Pageable pageable);
 
     Order save(Order order);
 }

@@ -17,5 +17,5 @@ public interface OrderJpaRepository extends JpaRepository<Order, UUID> {
     Slice<Order> findAllByUserId(UUID userId, Pageable pageable);
     Optional<Order> findByUserIdAndOrderItems_PlanUnitId(UUID userId, UUID planUnitId);
     boolean existsByUserIdAndOrderStatus(UUID userId, OrderStatus orderStatus);
-    List<Order> findAllByOrderStatusAndCreatedAtBefore(OrderStatus orderStatus, LocalDateTime createdAt);
+    Slice<Order> findAllByOrderStatusAndCreatedAtBefore(OrderStatus orderStatus, LocalDateTime timeoutThreshold, Pageable pageable);
 }
