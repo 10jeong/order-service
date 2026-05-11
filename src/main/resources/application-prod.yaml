@@ -65,6 +65,7 @@ eureka:
     prefer-ip-address: false
     non-secure-port-enabled: true
     secure-port-enabled: false
+    ip-address: ${EUREKA_INSTANCE_IP}
 
 jwt:
   secret: ${JWT_INTERNAL_SECRET}
