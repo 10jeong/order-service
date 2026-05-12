@@ -42,7 +42,7 @@ public class OrderCommandService {
     private final PaymentClient paymentClient;
     private final OrderOutboxRecorder orderOutboxRecorder;
 
-    private static final long PAYMENT_TIMEOUT_MINUTES = 15;
+    private static final long PAYMENT_TIMEOUT_MINUTES = 1;
 
     public OrderResult createOrder(CreateOrderCommand orderCommand) {
 
