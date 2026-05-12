@@ -55,18 +55,18 @@ public class OrderCommandService {
         ApprovalUserCommand approvalUserCommand = planClient.getPlanParticipation(orderCommand.userId(), orderItemCommand.planUnitId());
 
         // 참여 가능 상태인지 검증
-        //validateParticipationAvailable(approvalUserCommand.status());
+        validateParticipationAvailable(approvalUserCommand.status());
 
         // 상품 정보 조회
         OrderableProductCommand productCommand = productClient.getSchedule(orderItemCommand.productId(), orderItemCommand.scheduleId());
 
         // 이미 구매한 단위 일정의 상품인지 확인
-        //validateDuplicateOrder(orderCommand.userId(), orderItemCommand.planUnitId());
+        validateDuplicateOrder(orderCommand.userId(), orderItemCommand.planUnitId());
 
         // 판매 가능 상태인지 검증
-        //validateProductAvailable(productCommand.productStatus());
-        //validateScheduleAvailable(productCommand.scheduleStatus());
-        //validateStock(productCommand.stock(), orderItemCommand.quantity());
+        validateProductAvailable(productCommand.productStatus());
+        validateScheduleAvailable(productCommand.scheduleStatus());
+        validateStock(productCommand.stock(), orderItemCommand.quantity());
 
         Order order = Order.create(
                 orderCommand.userId(),
