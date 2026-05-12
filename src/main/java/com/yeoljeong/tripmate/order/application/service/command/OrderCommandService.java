@@ -2,6 +2,7 @@ package com.yeoljeong.tripmate.order.application.service.command;
 
 import com.yeoljeong.tripmate.event.OrderCancelledEvent;
 import com.yeoljeong.tripmate.event.OrderCreatedEvent;
+import com.yeoljeong.tripmate.event.OrderSchedulerCancelledEvent;
 import com.yeoljeong.tripmate.event.enums.OrderTopic;
 import com.yeoljeong.tripmate.exception.BusinessException;
 import com.yeoljeong.tripmate.order.application.client.PaymentClient;
@@ -41,7 +42,7 @@ public class OrderCommandService {
     private final PaymentClient paymentClient;
     private final OrderOutboxRecorder orderOutboxRecorder;
 
-    private static final long PAYMENT_TIMEOUT_MINUTES = 15;
+    private static final long PAYMENT_TIMEOUT_MINUTES = 1;
 
     public OrderResult createOrder(CreateOrderCommand orderCommand) {
 
@@ -55,18 +56,18 @@ public class OrderCommandService {
         ApprovalUserCommand approvalUserCommand = planClient.getPlanParticipation(orderCommand.userId(), orderItemCommand.planUnitId());
 
         // 참여 가능 상태인지 검증
-        //validateParticipationAvailable(approvalUserCommand.status());
+        validateParticipationAvailable(approvalUserCommand.status());
 
         // 상품 정보 조회
         OrderableProductCommand productCommand = productClient.getSchedule(orderItemCommand.productId(), orderItemCommand.scheduleId());
 
         // 이미 구매한 단위 일정의 상품인지 확인
-        //validateDuplicateOrder(orderCommand.userId(), orderItemCommand.planUnitId());
+        validateDuplicateOrder(orderCommand.userId(), orderItemCommand.planUnitId());
 
         // 판매 가능 상태인지 검증
-        //validateProductAvailable(productCommand.productStatus());
-        //validateScheduleAvailable(productCommand.scheduleStatus());
-        //validateStock(productCommand.stock(), orderItemCommand.quantity());
+        validateProductAvailable(productCommand.productStatus());
+        validateScheduleAvailable(productCommand.scheduleStatus());
+        validateStock(productCommand.stock(), orderItemCommand.quantity());
 
         Order order = Order.create(
                 orderCommand.userId(),
@@ -165,6 +166,18 @@ public class OrderCommandService {
 
                 if (!payment.exists()) {
                     order.cancel(LocalDateTime.now(), OrderCancelReason.PAYMENT_TIMEOUT);
+
+                    OrderSchedulerCancelledEvent event = new OrderSchedulerCancelledEvent(
+                            UUID.randomUUID(),
+                            order.getUserId(),
+                            order.getOrderItems().get(0).getPlanUnitId(),
+                            order.getOrderItems().get(0).getProductInfo().getProductId(),
+                            order.getOrderItems().get(0).getProductInfo().getScheduleId(),
+                            order.getOrderItems().get(0).getQuantity()
+                    );
+
+                    // 스케줄러 주문 취소 이벤트 outbox에 저장
+                    orderOutboxRecorder.record(OrderTopic.ORDER_SCHEDULER_CANCELLED_TOPIC, event);
                 }
             } catch (Exception e) {
                 log.warn("[Order] timeout cancel skip: orderId={}", order.getId(), e);
