@@ -2,6 +2,7 @@ package com.yeoljeong.tripmate.order.application.service.command;
 
 import com.yeoljeong.tripmate.event.OrderCancelledEvent;
 import com.yeoljeong.tripmate.event.OrderCreatedEvent;
+import com.yeoljeong.tripmate.event.OrderSchedulerCancelledEvent;
 import com.yeoljeong.tripmate.event.enums.OrderTopic;
 import com.yeoljeong.tripmate.exception.BusinessException;
 import com.yeoljeong.tripmate.order.application.client.PaymentClient;
@@ -165,6 +166,18 @@ public class OrderCommandService {
 
                 if (!payment.exists()) {
                     order.cancel(LocalDateTime.now(), OrderCancelReason.PAYMENT_TIMEOUT);
+
+                    OrderSchedulerCancelledEvent event = new OrderSchedulerCancelledEvent(
+                            UUID.randomUUID(),
+                            order.getUserId(),
+                            order.getOrderItems().get(0).getPlanUnitId(),
+                            order.getOrderItems().get(0).getProductInfo().getProductId(),
+                            order.getOrderItems().get(0).getProductInfo().getScheduleId(),
+                            order.getOrderItems().get(0).getQuantity()
+                    );
+
+                    // 스케줄러 주문 취소 이벤트 outbox에 저장
+                    orderOutboxRecorder.record(OrderTopic.ORDER_SCHEDULER_CANCELLED_TOPIC, event);
                 }
             } catch (Exception e) {
                 log.warn("[Order] timeout cancel skip: orderId={}", order.getId(), e);
