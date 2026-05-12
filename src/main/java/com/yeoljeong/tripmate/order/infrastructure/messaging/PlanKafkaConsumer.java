@@ -1,7 +1,7 @@
 package com.yeoljeong.tripmate.order.infrastructure.messaging;
 
 import com.yeoljeong.tripmate.event.PlanUnitAddParticipantFailedEvent;
-import com.yeoljeong.tripmate.event.PlanUnitDeductParticipantEvent;
+import com.yeoljeong.tripmate.event.PlanUnitDeductParticipantByProductEvent;
 import com.yeoljeong.tripmate.event.PlanUnitParticipantQuitEvent;
 import com.yeoljeong.tripmate.event.enums.PlanTopic;
 import com.yeoljeong.tripmate.exception.BusinessException;
@@ -90,14 +90,14 @@ public class PlanKafkaConsumer {
     }
 
     @KafkaListener(
-            topics = PlanTopic.PLAN_UNIT_PARTICIPANT_DEDUCTED_TOPIC,
+            topics = PlanTopic.PLAN_UNIT_PARTICIPANT_DEDUCTED_BY_PRODUCT_TOPIC,
             groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "kafkaListenerContainerFactory"
     )
     public void consumePlanUnitDeductParticipant(String payload, Acknowledgment acknowledgment) {
 
         try {
-            PlanUnitDeductParticipantEvent event = payloadDeserializer.deserialize(payload, PlanUnitDeductParticipantEvent.class);
+            PlanUnitDeductParticipantByProductEvent event = payloadDeserializer.deserialize(payload, PlanUnitDeductParticipantByProductEvent.class);
 
             log.info("[Order] plan.unit.participant.deducted 이벤트 수신: orderId={}", event.orderId());
 
