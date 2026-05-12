@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -213,7 +214,8 @@ public class OrderCommandService {
     }
 
     private void validateDuplicateOrder(UUID userId, UUID planUnitId) {
-        if (orderRepository.existsByUserIdAndPlanUnitId(userId, planUnitId)) {
+        if (orderRepository.existsByUserIdAndPlanUnitIdAndOrderStatusIn(userId, planUnitId,
+                List.of(OrderStatus.CREATED, OrderStatus.COMPLETED))) {
             throw new BusinessException(OrderErrorCode.ALREADY_ORDERED_PLAN_UNIT);
         }
     }

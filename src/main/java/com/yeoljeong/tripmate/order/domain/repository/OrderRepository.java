@@ -6,13 +6,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface OrderRepository {
 
     // 단위 일정에 귀속된 상품을 사용자가 이미 주문한 이력이 있는지
-    boolean existsByUserIdAndPlanUnitId(UUID userId, UUID planUnitId);
+    boolean existsByUserIdAndPlanUnitIdAndOrderStatusIn(UUID userId, UUID planUnitId,  Collection<OrderStatus> orderStatuses);
 
     // 사용자의 주문 단건 조회
     Optional<Order> findByIdAndUserId(UUID orderId, UUID userId);
