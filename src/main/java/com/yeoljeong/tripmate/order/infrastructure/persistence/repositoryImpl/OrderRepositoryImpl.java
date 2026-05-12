@@ -10,6 +10,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,8 +21,8 @@ public class OrderRepositoryImpl implements OrderRepository {
     private final OrderJpaRepository orderJpaRepository;
 
     @Override
-    public boolean existsByUserIdAndPlanUnitId(UUID userId, UUID planUnitId) {
-        return orderJpaRepository.existsByUserIdAndOrderItems_PlanUnitId(userId, planUnitId);
+    public boolean existsByUserIdAndPlanUnitIdAndOrderStatusIn(UUID userId, UUID planUnitId, Collection<OrderStatus> orderStatuses) {
+        return orderJpaRepository.existsByUserIdAndOrderItems_PlanUnitIdAndOrderStatusIn(userId, planUnitId, orderStatuses);
     }
 
     @Override
