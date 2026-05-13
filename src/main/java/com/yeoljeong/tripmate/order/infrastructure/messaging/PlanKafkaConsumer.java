@@ -36,10 +36,7 @@ public class PlanKafkaConsumer {
 
             log.info("[Order] plan.unit.participant.quit 이벤트 수신: planUnitId={}", event.planUnitId());
 
-            OrderCancelReason reason = (event.reason() == null || event.reason().isBlank())
-                    ? OrderCancelReason.PLAN_PARTICIPANT_QUIT : OrderCancelReason.from(event.reason());
-
-            commandService.cancelOrderByParticipantQuit(event.userId(), event.planUnitId(), reason);
+            commandService.cancelOrderByParticipantQuit(event.userId(), event.planUnitId(), OrderCancelReason.PLAN_PARTICIPANT_QUIT);
             acknowledgment.acknowledge();
 
             log.info("[Order] plan.unit.participant.quit 이벤트 처리 성공: userId={}, planUnitId={}", event.userId(), event.planUnitId());
