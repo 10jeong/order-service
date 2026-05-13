@@ -84,9 +84,9 @@ management:
   tracing:
     sampling:
       probability: 1.0
-    zipkin:
-      tracing:
-        endpoint: ${ZIPKIN_SERVER_URL}
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_SERVER_URL}
 
 jwt:
   secret: ${JWT_INTERNAL_SECRET}
